@@ -55,6 +55,15 @@ cut, which is why dark ink lands on green, yellow, orange and red, and white ink
 on deep red and purple. A badge is never coloured text on a tinted background: that was
 the low-contrast version of this.
 
+**The fill is for a reading; our own numbers wear the outline.** `BadgeVariant.Solid`
+marks a value we read from a source, `BadgeVariant.Outlined` a value we computed
+ourselves, where the severity colour stays in the border and the glyph and the label
+stays in the page's text colour. The two share one severity palette, so without the
+distinction an amber "Sedang" for the air at a city and an amber "Sedang" for our
+province risk score can sit a line apart in the same panel and read as the same claim.
+An outlined chip also names its own scale in its label ("Risiko provinsi: Sedang"),
+because the palette cannot say which scale it came from.
+
 ## Type
 
 Geist Sans for everything, Geist Mono for numbers.
