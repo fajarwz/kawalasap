@@ -10,6 +10,18 @@
 export const INK_DARK = '#0b0f14';
 export const INK_LIGHT = '#ffffff';
 
+/**
+ * Which badge a number wears. Solid marks a value read from a source; outlined
+ * marks a value we computed ourselves, so the same severity palette cannot make a
+ * modelled air reading and our own risk score look like the same kind of claim.
+ * The enum lives here, not in the component, because a component file that also
+ * exports a constant breaks fast refresh.
+ */
+export enum BadgeVariant {
+  Solid = 'solid',
+  Outlined = 'outlined',
+}
+
 /** 0 to 255 per channel, or null when the value is not a colour we can read. */
 function channels(value: string): [number, number, number] | null {
   const colour = value.trim();
