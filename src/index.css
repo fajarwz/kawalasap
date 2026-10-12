@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Geist-based token set, following Vercel's design guidance.
+ *
+ * The rules, in one place:
+ *  - Two page backgrounds (--bg for the page, --surface for a raised panel).
+ *  - Three component backgrounds: --surface (default), --surface-2 (hover and
+ *    active), and nothing else. No fourth grey invented anywhere.
+ *  - Two border strengths (--border, --border-strong), both SOLID. Never a
+ *    translucent border: overlapping alpha edges show where they cross.
+ *  - Two text strengths (--text, --muted) plus --faint for tertiary labels.
+ *  - One accent. Orange here because the subject is fire, not because it is a
+ *    brand colour. Everything else stays grey.
+ *  - Shadows are for overlays only, and they are small. No glow, no blur.
+ */
+:root {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-solid: #0a0a0a;
+  --surface-2: #171717;
+  --border: #262626;
+  --border-strong: #404040;
+  --text: #ededed;
+  --muted: #a1a1a1;
+  --faint: #737373;
+  --accent: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.14);
+  --ok: #22c55e;
+  --warn: #eab308;
+  --bad: #ef4444;
+  --info: #38bdf8;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-overlay: 0 8px 24px -8px rgba(0, 0, 0, 0.9);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-solid: #fafafa;
+  --surface-2: #f2f2f2;
+  --border: #e5e5e5;
+  --border-strong: #d4d4d4;
+  --text: #171717;
+  --muted: #666666;
+  --faint: #8f8f8f;
+  --accent: #ea580c;
+  --accent-soft: rgba(234, 88, 12, 0.1);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-overlay: 0 8px 24px -10px rgba(0, 0, 0, 0.25);
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  /* A flat page. The previous radial gradients went first: they decorated the
+     page without carrying information, which is the one thing the guidance
+     rules out. */
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist Variable', 'Geist', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers are data. Mono plus tabular figures so digits line up in columns and
+   a value never jitters when it changes. */
+.num {
+  font-family: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Leaflet inside this shell: these are the only rules that must beat Leaflet's
+   own stylesheet, so they carry !important deliberately. */
+.leaflet-container {
+  background: var(--bg);
+  font: inherit;
+  outline: none;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface-solid) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-overlay);
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+.leaflet-popup-content {
+  margin: 10px 12px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.leaflet-popup-content b {
+  font-weight: 600;
+}
+.leaflet-control-attribution {
+  background: color-mix(in srgb, var(--bg) 82%, transparent) !important;
+  color: var(--faint) !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--muted) !important;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background: var(--surface-solid) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-tooltip {
+  background: var(--surface-solid);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 11px;
+  box-shadow: none;
+}
+.leaflet-tooltip-top:before {
+  border-top-color: var(--border-strong);
+}
+
+/**
+ * Motion is a courtesy, never information: a reader whose system asks for less
+ * of it still gets every number, just without the movement. The override is
+ * global and blunt on purpose, so an animation added later cannot forget it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
