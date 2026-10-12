@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kawal Asap: contoh tampilan (Geist)</title>
+    <style>
+      /*
+       * Status: a solid fill in the severity colour, ink chosen for contrast,
+       * an icon then the label. Coloured 11px text on a tinted fill was the
+       * low-contrast version of this.
+       */
+      .status {
+        display: inline-flex; align-items: center; gap: 5px;
+        border-radius: 999px; padding: 2px 8px 2px 6px;
+        font-size: 11px; font-weight: 500; white-space: nowrap;
+      }
+      .status svg { width: 12px; height: 12px; display: block; flex: none; }
+
+      table { width: 100%; border-collapse: collapse; text-align: left; }
+      th {
+        font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+        color: var(--faint); font-weight: 500; padding: 0 12px 8px 0;
+      }
+      td { padding: 12px 12px 12px 0; vertical-align: top; }
+      tr + tr td { border-top: 1px solid var(--border); }
+      .r { text-align: right; }
+      .driver { margin-top: 2px; color: var(--faint); font-size: 12px; line-height: 16px; }
+      a.region { color: var(--text); text-decoration: none; font-size: 13px; font-weight: 500; }
+      a.region:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+      /* Documentation-only section, marked with a dashed rule and dashed boxes. */
+      .docs { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+      .docs h2 { margin: 0; }
+      .docbox { border: 1px dashed var(--border-strong); border-radius: 8px; padding: 12px; }
+      .spec {
+        margin-top: 16px; display: grid; gap: 24px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      @media (max-width: 900px) { .spec { grid-template-columns: minmax(0, 1fr); } }
+      .spec h3 { margin: 0 0 12px; }
+      .spec ul { margin: 0; padding-left: 16px; color: var(--muted); font-size: 12px; line-height: 20px; }
+      .sizerow {
+        display: flex; align-items: baseline; gap: 12px;
+        padding: 4px 0; border-bottom: 1px solid var(--border);
+      }
+      .sizerow:last-child { border-bottom: 0; }
+      .sizerow .role { margin-left: auto; color: var(--faint); font-size: 11px; text-align: right; }
+      .space { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+      .space .u { text-align: center; color: var(--faint); font-size: 11px; }
+      .space .u i {
+        display: block; background: var(--surface-2);
+        border: 1px solid var(--border-strong); border-radius: 2px; margin-bottom: 4px;
+      }
+      .states { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+      @media (max-width: 900px) { .states { grid-template-columns: minmax(0, 1fr); } }
+      .skeleton { height: 12px; border-radius: 4px; background: var(--surface-2); margin-bottom: 8px; }
+      .is-focused { outline: 2px solid var(--accent); outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="top">
+        <div class="brand">
+          <span class="mark">KA</span>
+          <span>
+            <span style="display: block; font-weight: 600">Kawal Asap</span>
+            <span class="micro faint" style="display: block">Pemantauan kabut asap Indonesia</span>
+          </span>
+        </div>
+        <nav class="top">
+          <a class="navlink on l13" href="#">Dasbor</a>
+          <a class="navlink l13" href="#">Metode dan data</a>
+          <button class="theme" id="theme" type="button">Terang</button>
+        </nav>
+      </header>
+
+      <!-- One title, one freshness stamp, one toolbar. No fourth zone. -->
+      <div class="head">
+        <h1 class="h24">Ringkasan Indonesia</h1>
+        <span class="num faint l12 meta">Data per 12 Okt 2026 19.04 WIB, diperbarui 4 menit lalu</span>
+      </div>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Rentang waktu">
+          <button type="button" class="on">24 jam</button>
+          <button type="button">48 jam</button>
+          <button type="button">7 hari</button>
+        </div>
+        <select aria-label="Wilayah">
+          <option>Semua Indonesia</option>
+          <option>Riau</option>
+          <option>Kalimantan Tengah</option>
+        </select>
+        <button class="ghost" type="button">Filter lanjutan (3)</button>
+      </div>
+
+      <!-- Shown only when the band is high or very high. -->
+      <div class="alert">
+        <span class="c13">
+          <b style="font-weight: 600">Risiko tinggi: Riau.</b>
+          <span class="muted">412 titik panas 24 jam, 3 hari tanpa hujan, angin 18 km/jam ke barat laut.</span>
+        </span>
+      </div>
+
+      <!-- Four tiles, one number each, one size. Every note says where the number comes from. -->
+      <div class="grid cols-4">
+        <div class="tile">
+          <div class="micro faint">Titik panas 24 jam</div>
+          <div class="h20 num value">1.482</div>
+          <div class="note">VIIRS SNPP 1.204, MODIS 278</div>
+        </div>
+        <div class="tile">
+          <div class="micro faint">Titik panas 7 hari</div>
+          <div class="h20 num value">7.764</div>
+          <div class="note">Termasuk 24 jam terakhir</div>
+        </div>
+        <div class="tile">
+          <div class="micro faint">FRP rata-rata</div>
+          <div class="h20 num value">38 MW</div>
+          <div class="note">Hanya deteksi dengan FRP terukur</div>
+        </div>
+        <div class="tile">
+          <div class="micro faint">PM2.5 tertinggi</div>
+          <div class="h20 num value">112 µg/m³</div>
+          <div class="note">Pekanbaru, nilai model CAMS</div>
+        </div>
+      </div>
+
+      <!-- The map is the hero. No subtitle: the note under the legend says it all. -->
+      <div class="grid" style="grid-template-columns: minmax(0, 1fr)">
+        <section class="panel">
+          <div class="panel-head">
+            <h2 class="h16">Peta titik panas</h2>
+            <span class="num faint l12">1.482 titik, kotak 0,1°</span>
+          </div>
+
+          <div class="map">
+            <span class="citylabel" style="left: 22%; top: 26%">Pekanbaru</span>
+            <span class="citylabel" style="left: 58%; top: 62%">Palangka Raya</span>
+            <span class="dot" style="left: 20%; top: 24%; width: 16px; height: 16px; background: #ef4444"></span>
+            <span class="dot" style="left: 24%; top: 30%; width: 10px; height: 10px; background: #f97316"></span>
+            <span class="dot" style="left: 27%; top: 21%; width: 7px; height: 7px; background: #fbbf24"></span>
+            <span class="dot" style="left: 56%; top: 60%; width: 13px; height: 13px; background: #ef4444"></span>
+            <span class="dot" style="left: 60%; top: 66%; width: 9px; height: 9px; background: #f97316"></span>
+            <span class="dot" style="left: 52%; top: 70%; width: 6px; height: 6px; background: #fbbf24"></span>
+            <span class="dot" style="left: 62%; top: 54%; width: 6px; height: 6px; background: #fbbf24"></span>
+            <span class="dot" style="left: 36%; top: 44%; width: 8px; height: 8px; background: #f97316"></span>
+            <span class="dot" style="left: 40%; top: 38%; width: 6px; height: 6px; background: #fbbf24"></span>
+            <span class="dot" style="left: 72%; top: 40%; width: 7px; height: 7px; background: #fbbf24"></span>
+            <span class="dot" style="left: 78%; top: 48%; width: 11px; height: 11px; background: #f97316"></span>
+            <span class="maptag">Contoh tampilan, bukan data sebenarnya</span>
+          </div>
+
+          <!-- Legend: one line, under the map instead of over it. -->
+          <div class="legend">
+            <span><b>FRP</b></span>
+            <span class="swatch"><i class="dot" style="width: 8px; height: 8px; background: #fde68a"></i>&lt; 10 MW</span>
+            <span class="swatch"><i class="dot" style="width: 8px; height: 8px; background: #fbbf24"></i>10–30</span>
+            <span class="swatch"><i class="dot" style="width: 8px; height: 8px; background: #f97316"></i>30–60</span>
+            <span class="swatch"><i class="dot" style="width: 8px; height: 8px; background: #ef4444"></i>&gt; 60</span>
+            <span class="swatch"><i class="dot" style="width: 8px; height: 8px; background: #38bdf8; border-radius: 2px"></i>Angin 850 hPa</span>
+          </div>
+          <p class="l12 faint" style="margin: 8px 0 0">
+            Kotak digabung saat zoom keluar. Ukuran lingkaran = jumlah deteksi. Satu deteksi bukan satu kebakaran.
+          </p>
+        </section>
+      </div>
+
+      <div class="grid split">
+        <section class="panel">
+          <div class="panel-head">
+            <h2 class="h16">Tren 7 hari</h2>
+            <span class="l12 faint">Deteksi per hari, semua wilayah</span>
+          </div>
+          <div class="chart">
+            <div class="bar-col"><span class="num cap">820</span><div class="bar" style="height: 42%"></div></div>
+            <div class="bar-col"><span class="num cap">1.104</span><div class="bar" style="height: 57%"></div></div>
+            <div class="bar-col"><span class="num cap">968</span><div class="bar" style="height: 50%"></div></div>
+            <div class="bar-col"><span class="num cap">1.402</span><div class="bar" style="height: 72%"></div></div>
+            <div class="bar-col"><span class="num cap">1.286</span><div class="bar" style="height: 66%"></div></div>
+            <div class="bar-col"><span class="num cap">1.620</span><div class="bar" style="height: 84%"></div></div>
+            <div class="bar-col"><span class="num cap">1.482</span><div class="bar" style="height: 76%"></div></div>
+          </div>
+          <div class="axis">
+            <span>6 Okt</span><span>7 Okt</span><span>8 Okt</span><span>9 Okt</span>
+            <span>10 Okt</span><span>11 Okt</span><span>12 Okt</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2 class="h16">Kualitas udara kota</h2>
+            <span class="l12 faint">Terburuk di atas</span>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <span class="grow">
+                <span class="city">Pekanbaru</span>
+                <span class="l12 faint" style="display: block">Riau</span>
+              </span>
+              <span class="num l12 muted">112 µg/m³</span>
+              <span class="status" style="background:#ef4444;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 2h4.8L14 5.6v4.8L10.4 14H5.6L2 10.4V5.6z"/><path d="M8 5.6v3.2"/><circle cx="8" cy="11" r=".85" fill="currentColor" stroke="none"/></svg>158 Sangat tidak sehat</span>
+            </div>
+            <div class="row">
+              <span class="grow">
+                <span class="city">Palangka Raya</span>
+                <span class="l12 faint" style="display: block">Kalimantan Tengah</span>
+              </span>
+              <span class="num l12 muted">88 µg/m³</span>
+              <span class="status" style="background:#f97316;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.4 14.4 13.6H1.6z"/><path d="M8 6.4v3.1"/><circle cx="8" cy="11.6" r=".85" fill="currentColor" stroke="none"/></svg>132 Tidak sehat</span>
+            </div>
+            <div class="row">
+              <span class="grow">
+                <span class="city">Jambi</span>
+                <span class="l12 faint" style="display: block">Jambi</span>
+              </span>
+              <span class="num l12 muted">54 µg/m³</span>
+              <span class="status" style="background:#eab308;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.2h9M3.5 9.8h9"/></svg>96 Sedang</span>
+            </div>
+            <div class="row">
+              <span class="grow">
+                <span class="city">Jakarta</span>
+                <span class="l12 faint" style="display: block">DKI Jakarta</span>
+              </span>
+              <span class="num l12 muted">31 µg/m³</span>
+              <span class="status" style="background:#22c55e;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 8.6l3.1 3.1L12.8 4.9"/></svg>62 Baik</span>
+            </div>
+          </div>
+          <p class="l12 faint" style="margin: 12px 0 0">
+            AQI memakai skala US EPA. Ini nilai model, bukan hasil pengukuran stasiun.
+          </p>
+        </section>
+      </div>
+
+      <div class="grid" style="grid-template-columns: minmax(0, 1fr)">
+        <section class="panel">
+          <div class="panel-head">
+            <h2 class="h16">Risiko per provinsi</h2>
+            <span class="l12 faint">Skor heuristic kami, bukan prakiraan resmi</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Provinsi</th>
+                <th>Risiko</th>
+                <th class="r">24 jam</th>
+                <th class="r">PM2.5</th>
+                <th class="r">FRP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <a class="region" href="#">Riau</a>
+                  <div class="driver">Angin 18 km/jam, 3 hari tanpa hujan</div>
+                </td>
+                <td><span class="status" style="background:#ef4444;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 2h4.8L14 5.6v4.8L10.4 14H5.6L2 10.4V5.6z"/><path d="M8 5.6v3.2"/><circle cx="8" cy="11" r=".85" fill="currentColor" stroke="none"/></svg>Sangat tinggi 78</span></td>
+                <td class="r num">412</td>
+                <td class="r num">112 µg/m³</td>
+                <td class="r num">44 MW</td>
+              </tr>
+              <tr>
+                <td>
+                  <a class="region" href="#">Kalimantan Tengah</a>
+                  <div class="driver">Angin 12 km/jam, hujan 0 mm 7 hari</div>
+                </td>
+                <td><span class="status" style="background:#f97316;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.4 14.4 13.6H1.6z"/><path d="M8 6.4v3.1"/><circle cx="8" cy="11.6" r=".85" fill="currentColor" stroke="none"/></svg>Tinggi 66</span></td>
+                <td class="r num">268</td>
+                <td class="r num">88 µg/m³</td>
+                <td class="r num">39 MW</td>
+              </tr>
+              <tr>
+                <td>
+                  <a class="region" href="#">Jambi</a>
+                  <div class="driver">Angin 9 km/jam, hujan 4 mm 7 hari</div>
+                </td>
+                <td><span class="status" style="background:#eab308;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.2h9M3.5 9.8h9"/></svg>Sedang 48</span></td>
+                <td class="r num">154</td>
+                <td class="r num">54 µg/m³</td>
+                <td class="r num">31 MW</td>
+              </tr>
+              <tr>
+                <td>
+                  <a class="region" href="#">Papua Selatan</a>
+                  <div class="driver">Angin 7 km/jam, hujan 22 mm 7 hari</div>
+                </td>
+                <td><span class="status" style="background:#22c55e;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 8.6l3.1 3.1L12.8 4.9"/></svg>Rendah 24</span></td>
+                <td class="r num">61</td>
+                <td class="r num">18 µg/m³</td>
+                <td class="r num">22 MW</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- Everything below documents the system. Dashed rules mark it as not-UI. -->
+      <div class="docs">
+        <h2 class="h16">Bagian ini dokumentasi, bukan tampilan</h2>
+
+        <div class="states">
+          <div class="docbox">
+            <div class="micro faint" style="margin-bottom: 12px">Memuat</div>
+            <div class="skeleton" style="width: 60%"></div>
+            <div class="skeleton" style="width: 85%"></div>
+            <div class="skeleton" style="width: 45%"></div>
+            <p class="l12 muted" style="margin: 12px 0 0">
+              Kerangka, bukan pemintal. Susunannya tetap sama supaya halaman tidak melompat saat data tiba.
+            </p>
+          </div>
+          <div class="docbox">
+            <div class="micro faint" style="margin-bottom: 12px">Tidak ada deteksi</div>
+            <p class="c13" style="margin: 0">Tidak ada titik panas pada rentang ini.</p>
+            <p class="l12 muted" style="margin: 6px 0 0">
+              Satelit VIIRS dan MODIS terakhir melintas 6 jam lalu. Coba rentang 7 hari.
+            </p>
+            <button class="ghost" type="button" style="margin-top: 8px">Lihat 7 hari</button>
+          </div>
+          <div class="docbox">
+            <div class="micro faint" style="margin-bottom: 12px">Sumber gagal</div>
+            <p class="c13" style="margin: 0">
+              <span class="status" style="margin-right: 6px;background:#eab308;color:#0b0f14"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.2h9M3.5 9.8h9"/></svg>NASA FIRMS</span>
+              tidak menjawab.
+            </p>
+            <p class="l12 muted" style="margin: 6px 0 0">
+              Sisa halaman tetap terisi. Angka terakhir yang berhasil: 19.04 WIB.
+            </p>
+            <button class="ghost is-focused" type="button" style="margin-top: 8px">Coba lagi</button>
+            <p class="l12 faint" style="margin: 6px 0 0">Contoh fokus keyboard, bukan fokus sungguhan.</p>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div>
+            <h3 class="h16">Skala huruf</h3>
+            <div class="sizerow"><span class="h24">24</span><span class="role">Judul halaman, satu per halaman</span></div>
+            <div class="sizerow"><span class="h20">20</span><span class="role">Angka pada kartu statistik</span></div>
+            <div class="sizerow"><span class="h16">16</span><span class="role">Judul panel</span></div>
+            <div class="sizerow"><span class="c13">13</span><span class="role">Isi, sel tabel, kontrol</span></div>
+            <div class="sizerow"><span class="l12">12</span><span class="role">Catatan, satuan, sumbu</span></div>
+            <div class="sizerow"><span class="micro">11</span><span class="role">Label huruf besar</span></div>
+          </div>
+
+          <div>
+            <h3 class="h16">Ritme jarak</h3>
+            <div class="space">
+              <span class="u"><i style="width: 16px; height: 4px"></i>4</span>
+              <span class="u"><i style="width: 16px; height: 8px"></i>8</span>
+              <span class="u"><i style="width: 16px; height: 12px"></i>12</span>
+              <span class="u"><i style="width: 16px; height: 16px"></i>16</span>
+              <span class="u"><i style="width: 16px; height: 24px"></i>24</span>
+              <span class="u"><i style="width: 16px; height: 32px"></i>32</span>
+            </div>
+            <ul style="margin-top: 12px">
+              <li>Di dalam panel 16–20 px, antar panel 24 px, antar blok 24–32 px.</li>
+              <li>Jarak di dalam kelompok selalu lebih kecil dari jarak antar kelompok.</li>
+              <li>Judul ke isi 8 px. Jarak antar baris tabel 12 px.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="h16">Aturan yang dipegang</h3>
+            <ul>
+              <li>Satu aksen. Warna hanya untuk makna data, teksnya tetap terang.</li>
+              <li>Angka selalu mono dan tabular, satuan selalu ditulis.</li>
+              <li>Tanpa angka 36 px, tanpa blur, gradien, atau bayangan pada panel.</li>
+              <li>Satu judul dan satu cap waktu per halaman, bukan di setiap panel.</li>
+              <li>Muat, kosong dan gagal dirancang seperti tampilan biasa.</li>
+              <li>Lebih sedikit panel: rincian pindah ke halaman provinsi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').addEventListener('click', function () {
+        const root = document.documentElement;
+        const light = root.getAttribute('data-theme') === 'light';
+        root.setAttribute('data-theme', light ? 'dark' : 'light');
+        this.textContent = light ? 'Terang' : 'Gelap';
+      });
+      for (const group of document.querySelectorAll('.seg')) {
+        group.addEventListener('click', (event) => {
+          if (event.target.tagName !== 'BUTTON') return;
+          for (const button of group.children) button.classList.toggle('on', button === event.target);
+        });
+      }
+    </script>
+  </body>
+</html>
