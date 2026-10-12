@@ -9,6 +9,7 @@ import { regionLabel } from '../lib/regions.ts';
 import { BAND_COLOUR, BAND_LABEL_KEY, countForWindow, type RegionRow } from '../lib/risk.ts';
 import { coerceSearch } from '../lib/viewState.ts';
 import { Badge } from './ui/Badge.tsx';
+import { BadgeVariant } from '../lib/colour.ts';
 import { AqiIcon, BandIcon, IconUnknown } from './ui/icons.tsx';
 
 /** The index scale, split into the bands the tone colours describe. */
@@ -164,20 +165,25 @@ export function CitySummary({ reading, region, windowKey, now }: CitySummaryProp
 
       {region ? (
         <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-micro text-[var(--faint)]">
+          <Badge
+            variant={BadgeVariant.Outlined}
+            colour={BAND_COLOUR[region.band]}
+            icon={<BandIcon band={region.band} />}
+            title={region.drivers.join('; ')}
+          >
+            {t('summary.riskBand', { band: t(BAND_LABEL_KEY[region.band]) })}
+          </Badge>
+          <span>{t('summary.risk', { score: formatInt(region.score, lang), region: region.name })}</span>
           <Link
             to="/region/$regionId"
             params={{ regionId: region.regionId }}
             search={(previous) => coerceSearch({ ...previous, region: region.regionId })}
             className="inline-flex items-center gap-1.5"
           >
-            <Badge colour={BAND_COLOUR[region.band]} icon={<BandIcon band={region.band} />}>
-              {t(BAND_LABEL_KEY[region.band])}
-            </Badge>
             <span className="underline decoration-[var(--border-strong)] underline-offset-2 hover:decoration-[var(--accent)]">
               {t('summary.focusRegion', { region: region.name })}
             </span>
           </Link>
-          <span>{t('summary.risk', { score: formatInt(region.score, lang), region: region.name })}</span>
         </p>
       ) : null}
 

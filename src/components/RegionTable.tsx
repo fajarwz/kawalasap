@@ -5,6 +5,7 @@ import { useLang, useT } from '../lib/i18n.ts';
 import { BAND_COLOUR, BAND_LABEL_KEY, countForWindow, type RegionRow } from '../lib/risk.ts';
 import { coerceSearch } from '../lib/viewState.ts';
 import { Badge } from './ui/Badge.tsx';
+import { BadgeVariant } from '../lib/colour.ts';
 import { BandIcon } from './ui/icons.tsx';
 import { InfoTip } from './ui/InfoTip.tsx';
 
@@ -62,6 +63,7 @@ export function RegionTable({ rows, window }: RegionTableProps) {
               </td>
               <td className="py-3 pr-3">
                 <Badge
+                  variant={BadgeVariant.Outlined}
                   colour={BAND_COLOUR[row.band]}
                   icon={<BandIcon band={row.band} />}
                   title={row.drivers.join('; ')}
