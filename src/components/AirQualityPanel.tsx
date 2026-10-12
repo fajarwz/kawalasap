@@ -132,6 +132,10 @@ export function AirQualityPanel({
         </div>
       ) : null}
 
+      {!isLoading && !sorted.length && !pinned ? (
+        <p className="text-label-12 leading-relaxed text-[var(--muted)]">{t('aq.noneInRegion')}</p>
+      ) : null}
+
       <ul className="max-h-72 divide-y divide-[var(--border)] overflow-y-auto pr-1">
         {sorted.map((reading) => (
           <li key={reading.city.id}>
@@ -161,7 +165,9 @@ export function AirQualityPanel({
         ))}
       </ul>
 
-          <p className="text-micro leading-relaxed text-[var(--faint)]">{t('aq.listHint')}</p>
+          {sorted.length ? (
+            <p className="text-micro leading-relaxed text-[var(--faint)]">{t('aq.listHint')}</p>
+          ) : null}
         </>
       )}
     </div>

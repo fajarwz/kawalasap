@@ -81,6 +81,13 @@ Three routes: `/`, `/region/$regionId`, `/method`.
   `formatPin` and `parsePin` in the same file. Search and map clicks both set it, and a
   shared link reopens the same point. Anything half-typed in the search box stays local
   state: it is not a view.
+- **One control answers "where", and it answers at two levels.** `PlaceSearch` takes a
+  region name (ours, matched locally from the first letter) or a city name (geocoded, and
+  only inside Indonesia). A region sets `region=`, a city sets `pin=`. Do not add a second
+  place picker: a select in the toolbar listing provinces beside a box listing cities gave
+  two controls that looked like the same control, and the reader had no way to tell which
+  one scoped the page. The current region shows as a chip beside the box, which is also
+  where it is cleared.
 - Every route declares `validateSearch: coerceSearch`, **including the root route**.
   The root needs it so the header can change the language from any route. Remove it
   and `useNavigate()` in the layout resolves its search type to `never`.

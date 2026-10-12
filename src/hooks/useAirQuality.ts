@@ -69,6 +69,9 @@ export function useAirQuality() {
   });
 }
 
+/** The pinned point is not a city in the curated list, but it reads like one. */
+export const PINNED_CITY_ID = 'pinned';
+
 /**
  * The place the reader pinned, read on demand from the same model. It is cached
  * per place, so going back to a point you already read costs nothing.
@@ -81,7 +84,7 @@ export function usePinnedAirQuality(point: PinPoint | null) {
     queryFn: async (): Promise<CityReading | null> => {
       if (!point) return null;
       const city: City = {
-        id: 'pinned',
+        id: PINNED_CITY_ID,
         name: point.name,
         area: point.area,
         region: regionOf(point.lat, point.lon),

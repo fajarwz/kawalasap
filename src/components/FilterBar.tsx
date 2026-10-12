@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   CONFIDENCE_LABEL_KEY,
   Confidence,
@@ -8,7 +9,6 @@ import {
 } from '../lib/fires.ts';
 import { formatInt } from '../lib/format.ts';
 import { useLang, useT } from '../lib/i18n.ts';
-import { REGIONS } from '../lib/regions.ts';
 import { InfoTip } from './ui/InfoTip.tsx';
 import { Basemap, LayerMode, WindLevel, type DashboardSearch } from '../lib/viewState.ts';
 
@@ -18,6 +18,12 @@ interface FilterBarProps {
   shownCount: number;
   totalCount: number;
   layerForced: boolean;
+  /**
+   * Freshness stamp and the action that refreshes it. They sit on the right of this
+   * row because a head of three stacked lines pushed the map down for no reason,
+   * and the right of the toolbar row was empty.
+   */
+  meta?: ReactNode;
 }
 
 const selectClass =
@@ -39,6 +45,7 @@ export function FilterBar({
   shownCount,
   totalCount,
   layerForced,
+  meta,
 }: FilterBarProps) {
   const t = useT();
   const lang = useLang();
@@ -80,21 +87,6 @@ export function FilterBar({
           })}
         </div>
 
-        <select
-          className={selectClass}
-          aria-label={t('filter.region')}
-          value={search.region}
-          onChange={(event) => onChange({ region: event.target.value })}
-        >
-          <option value="all">{t('filter.allIndonesia')}</option>
-          {REGIONS.map((region) => (
-            <option key={region.id} value={region.id}>
-              {region.name}
-            </option>
-          ))}
-          <option value="neighbour">{t('filter.neighbour')}</option>
-        </select>
-
         <button
           type="button"
           aria-expanded={open}
@@ -103,6 +95,8 @@ export function FilterBar({
         >
           {t('dash.filtersTitle')} ({formatInt(advancedCount, lang)}) {open ? '▴' : '▾'}
         </button>
+
+        {meta ? <div className="ml-auto flex items-center gap-2">{meta}</div> : null}
       </div>
 
       {open ? (

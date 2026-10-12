@@ -75,10 +75,11 @@
         </nav>
       </header>
 
-      <!-- One title, one freshness stamp, one toolbar. No fourth zone. -->
+      <!-- Page head: one title, one supporting line. The stamp and its action live in
+           the toolbar row below, on the right, which was where the empty half was. -->
       <div class="head">
         <h1 class="h24">Ringkasan Indonesia</h1>
-        <span class="num faint l12 meta">Data per 12 Okt 2026 19.04 WIB, diperbarui 4 menit lalu</span>
+        <span class="l13 muted">Deteksi titik panas satelit di seluruh Indonesia. Kotak kerapatan sebagai bawaan, satu titik per deteksi bila diminta.</span>
       </div>
       <div class="toolbar">
         <div class="seg" role="group" aria-label="Rentang waktu">
@@ -86,12 +87,11 @@
           <button type="button">48 jam</button>
           <button type="button">7 hari</button>
         </div>
-        <select aria-label="Wilayah">
-          <option>Semua Indonesia</option>
-          <option>Riau</option>
-          <option>Kalimantan Tengah</option>
-        </select>
-        <button class="ghost" type="button">Filter lanjutan (3)</button>
+        <button class="ghost" type="button">Filter (3)</button>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+          <span class="num faint l12">Diperbarui 4 menit lalu. Data per 12 Okt 2026 19.04 WIB.</span>
+          <button class="ghost" type="button">Muat ulang</button>
+        </span>
       </div>
 
       <!-- Shown only when the band is high or very high. -->
@@ -131,8 +131,16 @@
         <section class="panel">
           <div class="panel-head">
             <h2 class="h16">Peta titik panas</h2>
+            <!-- The one place control: a region scopes the page, a city drops a point. -->
+            <input
+              type="search"
+              aria-label="Cari tempat"
+              placeholder="Cari kota atau wilayah"
+              style="width: 260px; border: 1px solid var(--border-strong); background: var(--surface-2); border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 13px; color: var(--text)"
+            />
             <span class="num faint l12">1.482 titik, kotak 0,1°</span>
           </div>
+          <p class="micro faint" style="padding: 0 16px 10px">Klik peta untuk membaca nilai model di titik itu.</p>
 
           <div class="map">
             <span class="citylabel" style="left: 22%; top: 26%">Pekanbaru</span>

@@ -11,7 +11,7 @@ import { TrendChart } from './TrendChart.tsx';
 import { Card } from './ui/Card.tsx';
 import { InfoTip } from './ui/InfoTip.tsx';
 import { Skeleton } from './ui/Skeleton.tsx';
-import { useAirQuality, usePinnedAirQuality } from '../hooks/useAirQuality.ts';
+import { PINNED_CITY_ID, useAirQuality, usePinnedAirQuality } from '../hooks/useAirQuality.ts';
 import { useFires } from '../hooks/useFires.ts';
 import { useNow } from '../hooks/useNow.ts';
 import { useRegionClimate, useWindField } from '../hooks/useWind.ts';
@@ -25,6 +25,7 @@ import {
   type Hotspot,
 } from '../lib/fires.ts';
 import { formatDateTimeWib, formatInt, relativeTime } from '../lib/format.ts';
+import { regionLabel } from '../lib/regions.ts';
 import { useLang, useT } from '../lib/i18n.ts';
 import { BAND_COLOUR, BAND_LABEL_KEY, RiskBand, buildRegionRows, nationalRow } from '../lib/risk.ts';
 import { DRAW_LIMIT, toHotspotFilter } from '../lib/viewFilters.ts';
@@ -56,8 +57,20 @@ export function DashboardView({
   // A pinned place lives in the URL, so a shared link opens the same point.
   const pin = useMemo(() => parsePin(search.pin), [search.pin]);
   const pinnedAir = usePinnedAirQuality(pin);
-  const setPin = useCallback((point: PinPoint) => onChange({ pin: formatPin(point) }), [onChange]);
   const [selected, setSelected] = useState<string | null>(null);
+  const setPin = useCallback((point: PinPoint) => onChange({ pin: formatPin(point) }), [onChange]);
+  /**
+   * Picking a city is a request for that city's air, so its reading opens with it
+   * instead of leaving the reader to find the row and click it a second time.
+   */
+  const pickPlace = useCallback(
+    (point: PinPoint) => {
+      setPin(point);
+      setSelected(PINNED_CITY_ID);
+    },
+    [setPin],
+  );
+  const pickRegion = useCallback((regionId: string) => onChange({ region: regionId }), [onChange]);
   const clearPin = useCallback(() => {
     onChange({ pin: '' });
     setSelected(null);
@@ -76,6 +89,18 @@ export function DashboardView({
   const shown = useMemo(() => filterHotspots(hotspots, filter), [hotspots, filter]);
   const shownCells = useMemo(() => filterCells(cells, filter), [cells, filter]);
   const readings = useMemo(() => air.data ?? [], [air.data]);
+  /**
+   * The city list obeys the same scope as the map and the trend chart. A row that
+   * counts Kalimantan detections per day beside a list of Java cities was two
+   * different places in one row, which is what made the row read as broken.
+   */
+  const scopedReadings = useMemo(
+    () =>
+      effective.region === 'all'
+        ? readings
+        : readings.filter((reading) => reading.city.region === effective.region),
+    [readings, effective.region],
+  );
   const rows = useMemo(
     () =>
       buildRegionRows({
@@ -95,6 +120,9 @@ export function DashboardView({
       ),
     [shown],
   );
+
+  const scopeName =
+    effective.region === 'neighbour' ? t('filter.neighbour') : regionLabel(effective.region);
 
   const layerForced = effective.layer === LayerMode.Detections && shown.length > DRAW_LIMIT;
   const layer = layerForced ? LayerMode.Density : effective.layer;
@@ -169,45 +197,46 @@ export function DashboardView({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page head: one title, one stamp, one action. */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-heading-24">{title}</h1>
-          <p className="mt-1 max-w-[68ch] text-copy-13 text-[var(--muted)]">{subtitle}</p>
-          <p className="mt-1.5 flex items-center gap-1.5 text-micro text-[var(--faint)]">
-            <span className="num">
-              {t('dash.updatedShort', {
-                rel: relativeTime(payload.generatedAt, now, lang),
-                stamp: formatDateTimeWib(payload.generatedAt, lang),
-              })}
-            </span>
-            <InfoTip label={t('glossary.freshness.label')}>
-              {t('dash.assembled', {
-                rel: relativeTime(payload.generatedAt, now, lang),
-                stamp: formatDateTimeWib(payload.generatedAt, lang),
-                newest: formatDateTimeWib(payload.dataEnd, lang),
-                count: formatInt(payload.sources.length, lang),
-              })}
-            </InfoTip>
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={refresh}
-          className="rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-label-13 hover:border-[var(--accent)]"
-        >
-          {refreshing ? t('common.refreshing') : t('common.refresh')}
-        </button>
+    <div className="space-y-5">
+      {/* Page head: one title, one supporting line. The stamp and its action moved
+          to the toolbar row, which had the room and was half empty. */}
+      <div className="min-w-0">
+        <h1 className="text-heading-24">{title}</h1>
+        <p className="mt-1 max-w-[68ch] text-copy-13 text-[var(--muted)]">{subtitle}</p>
       </div>
 
-      {/* Toolbar: window, region, and one disclosure. Everything else waits behind it. */}
+      {/* Toolbar: window, one disclosure, and the freshness stamp with its action. */}
       <FilterBar
         search={effective}
         onChange={onChange}
         shownCount={shown.length}
         totalCount={hotspots.length}
         layerForced={layerForced}
+        meta={
+          <>
+            <span className="num flex items-center gap-1.5 text-micro text-[var(--faint)]">
+              {t('dash.updatedShort', {
+                rel: relativeTime(payload.generatedAt, now, lang),
+                stamp: formatDateTimeWib(payload.generatedAt, lang),
+              })}
+              <InfoTip label={t('glossary.freshness.label')}>
+                {t('dash.assembled', {
+                  rel: relativeTime(payload.generatedAt, now, lang),
+                  stamp: formatDateTimeWib(payload.generatedAt, lang),
+                  newest: formatDateTimeWib(payload.dataEnd, lang),
+                  count: formatInt(payload.sources.length, lang),
+                })}
+              </InfoTip>
+            </span>
+            <button
+              type="button"
+              onClick={refresh}
+              className="rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-label-13 hover:border-[var(--accent)]"
+            >
+              {refreshing ? t('common.refreshing') : t('common.refresh')}
+            </button>
+          </>
+        }
       />
 
       {bannerBand ? (
@@ -281,7 +310,7 @@ export function DashboardView({
       >
         {/* The two ways to choose a point sit together, on the thing they change. */}
         <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <PlaceSearch onPick={setPin} />
+          <PlaceSearch region={effective.region} onPick={pickPlace} onPickRegion={pickRegion} />
           <span className="text-label-12 text-[var(--faint)]">{t('map.pickHint')}</span>
         </div>
         <div className="h-[420px] overflow-hidden rounded-md sm:h-[500px] xl:h-[600px]">
@@ -314,7 +343,7 @@ export function DashboardView({
           <Card
             title={t('trend.title')}
             subtitle={`${t('trend.subtitle')}${
-              effective.region === 'all' ? '' : t('trend.subtitleFiltered')
+              effective.region === 'all' ? '' : t('trend.subtitleFiltered', { region: scopeName })
             }`}
           >
             <TrendChart daily={payload.daily} region={effective.region} />
@@ -323,13 +352,20 @@ export function DashboardView({
         <div className="xl:col-span-5">
           <Card
             title={t('dash.airTitle')}
-            subtitle={t('dash.airSubtitle')}
+            subtitle={
+              effective.region === 'all'
+                ? t('dash.airSubtitle')
+                : t('dash.airSubtitleScoped', {
+                    count: formatInt(scopedReadings.length, lang),
+                    region: scopeName,
+                  })
+            }
             actions={
               <InfoTip label={t('glossary.unitPm.label')}>{t('glossary.unitPm.body')}</InfoTip>
             }
           >
             <AirQualityPanel
-              readings={readings}
+              readings={scopedReadings}
               pinned={pinnedAir.data ?? null}
               pinnedLoading={pinnedAir.isPending && pin !== null}
               pinnedFailed={pinnedAir.isError}

@@ -210,21 +210,29 @@ is not one fire. Tips explain; they do not carry the disclaimer.
 
 ## The dashboard, top to bottom
 
-Top to bottom, in one column: a page head (h1, one supporting line, one freshness
-stamp, one action), a toolbar, an optional risk banner, four stat tiles, the map with its
-place search, a two column row (trend beside city air quality), the regional table, and
-the source table folded into a disclosure.
+Top to bottom, in one column: a page head (h1, one supporting line), a toolbar (the
+window, one disclosure, and the freshness stamp with the action that refreshes it on the
+right), an optional risk banner, four stat tiles, the map with its place search, a two
+column row (trend beside city air quality, both answering for the same place), the
+regional table, and the source table folded into a disclosure.
 
-- **One title and one stamp per page.** `h1` is the page's subject. The stamp line
-  under it covers the whole page; panels do not repeat it. A panel that shows data
-  from a *different* source or hour still carries that source's own time, because
-  that is new information, not a duplicate.
-- **A toolbar, not a form.** Window and region stay visible because they change what
-  the map shows. Confidence, radiative power, map layer, basemap and the wind layer
-  sit behind one disclosure that reports how many are non-default, so the page opens
-  quietly and the state is never hidden.
+- **One title and one stamp per page.** `h1` is the page's subject. The stamp covers the
+  whole page; panels do not repeat it. It sits on the right of the toolbar row rather than
+  stacked under the title, because three lines of head pushed the map down while the right
+  half of that area sat empty. A panel that shows data from a *different* source or hour
+  still carries that source's own time, because that is new information, not a duplicate.
+- **A toolbar, not a form.** The window stays visible because it changes what the map
+  shows. Confidence, radiative power, map layer, basemap and the wind layer sit behind one
+  disclosure that reports how many are non-default, so the page opens quietly and the
+  state is never hidden. Region is not in the toolbar: it belongs to the place search, and
+  a province select sitting here beside a city search sitting there was two controls that
+  looked like one control.
 - **Four tiles, equal weight, one number each.** No hero number, no coloured value:
   colour in this product means a reading, so the figure stays in the page text colour.
+- **Both panels in a row answer for the same place.** The trend counts detections for the
+  current scope and the city list shows the cities inside it, so one row can never pair
+  Kalimantan's daily counts with a list of Javan cities. A scope with no monitored city
+  says so and points at the search, instead of rendering an empty list.
 - **A picked city opens a summary, and the panel is master-detail.** The air quality
   card shows either the city list or one city's summary, never both: pick a city in the
   list, click its marker on the map, or click the pinned row, and the list is replaced by
@@ -239,12 +247,14 @@ the source table folded into a disclosure.
   never a tip.** Three lines per band, in visible text, followed by what it is not: not
   medical advice, not an official warning, and built on a model rather than a measurement
   at that address.
-- **The map is the largest element, and it owns the way in.** The place search sits above
-  the frame with the click-the-map hint beside it, because both do the same job: choose a
-  point. The reading that point produces lands in the air quality panel below, which is
-  where values live. A control parked with its output instead of with the surface it
-  changes is a control the reader has to hunt for. Legend below the frame as one quiet
-  line, explanatory note under that.
+- **The map is the largest element, and it owns the way in.** One box above the frame
+  takes both kinds of place: type `kal` and it offers the region, which scopes the whole
+  page, or type `sampit` and it offers the city, which drops a point, opens that point's
+  reading, and leaves a chip naming the region it fell inside. The click-the-map hint sits
+  beside it because a click does the second job only. A province chosen this way shows as a
+  chip next to the box, removable there, and a city whose region is not the current scope
+  is still readable: the chip states the scope, the reading states the city. Legend below
+  the frame as one quiet line, explanatory note under that.
 - **The table shows five columns.** Rain and wind were columns of their own until we
   noticed both already appear in the driver sentence under each province. A column
   that repeats a sentence is noise.
