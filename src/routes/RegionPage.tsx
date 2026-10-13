@@ -1,71 +1,58 @@
-import { Link, Navigate, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { DashboardView } from '../components/DashboardView.tsx';
-import { useT } from '../lib/i18n.ts';
+import { Navigate, useParams, useSearch } from '@tanstack/react-router';
+import { RegionOverview } from '../components/RegionOverview.tsx';
+import { cityById } from '../lib/places.ts';
+import { useLang } from '../lib/i18n.ts';
 import { regionById } from '../lib/regions.ts';
-import type { DashboardSearch } from '../lib/viewState.ts';
-import { coerceSearch, DEFAULT_SEARCH } from '../lib/viewState.ts';
+import { exploreFrom, regionFrom } from '../lib/viewState.ts';
 
+/**
+ * One route file for two paths: a region box, and a city or regency inside it.
+ * The rendering is the same template in both cases, because a reader asking about
+ * Pekanbaru and a reader asking about Kalimantan want the same four answers: what
+ * is detected, what the air is like, what is happening nearby, and what to do.
+ */
 export function RegionPage() {
-  const { regionId } = useParams({ from: '/region/$regionId' });
-  const search = useSearch({ from: '/region/$regionId' });
-  const navigate = useNavigate({ from: '/region/$regionId' });
-  const t = useT();
+  const params = useParams({ strict: false }) as { regionId?: string; placeId?: string };
+  const lang = useLang();
+  const search = useSearch({ from: '/$lang/region/$regionId' });
+  const regionId = params.regionId ?? '';
   const region = regionById(regionId);
+  const city = params.placeId ? cityById(params.placeId) ?? null : null;
 
-  if (!region) return <Navigate to="/" search={{ ...DEFAULT_SEARCH }} replace />;
-
-  /**
-   * On a province page the view is locked to the route, so writing `region` into
-   * the query string would change nothing and the select would snap back, which
-   * reads as a dead control. Choosing a province here means going to it, so the
-   * control navigates instead.
-   */
-  const onChange = (patch: Partial<DashboardSearch>) => {
-    if (patch.region !== undefined && patch.region !== regionId) {
-      const target = regionById(patch.region);
-      if (target) {
-        void navigate({
-          to: '/region/$regionId',
-          params: { regionId: target.id },
-          search: (previous) => coerceSearch({ ...previous, ...patch }),
-          replace: true,
-          resetScroll: false,
-        });
-      } else {
-        void navigate({
-          to: '/',
-          search: (previous) => coerceSearch({ ...previous, ...patch }),
-          replace: true,
-          resetScroll: false,
-        });
-      }
-      return;
-    }
-    void navigate({
-      to: '/region/$regionId',
-      params: { regionId },
-      search: (previous) => ({ ...previous, ...patch }),
-      replace: true,
-      resetScroll: false,
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <Link
-        to="/"
-        search={(previous) => coerceSearch({ ...previous, region: 'all' })}
-        className="inline-block text-xs text-[var(--muted)] hover:text-[var(--text)]"
-      >
-        {t('regionPage.back')}
-      </Link>
-      <DashboardView
-        search={search}
-        onChange={onChange}
-        lockedRegion={regionId}
-        title={t('regionPage.title', { region: region.name })}
-        subtitle={t('regionPage.subtitle', { region: region.name })}
+  // A place we cannot resolve is not a page. Send the reader to the map rather
+  // than an empty template that would look like missing data.
+  if (!region) {
+    return (
+      <Navigate
+        to="/$lang/explore"
+        params={{ lang }}
+        search={(previous) => exploreFrom(previous)}
+        replace
       />
-    </div>
-  );
+    );
+  }
+
+  /** A city only exists inside its own region box, so a mismatched pair is fixed. */
+  if (params.placeId && (!city || city.region !== regionId)) {
+    if (city) {
+      return (
+        <Navigate
+          to="/$lang/region/$regionId/$placeId"
+          params={{ lang, regionId: city.region, placeId: city.id }}
+          search={(previous) => regionFrom(previous)}
+          replace
+        />
+      );
+    }
+    return (
+      <Navigate
+        to="/$lang/region/$regionId"
+        params={{ lang, regionId }}
+        search={(previous) => regionFrom(previous)}
+        replace
+      />
+    );
+  }
+
+  return <RegionOverview regionId={regionId} place={city} window={search.window} />;
 }

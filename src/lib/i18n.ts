@@ -22,6 +22,16 @@ const idStrings: typeof en = id;
 const DICTS: Record<Lang, typeof en> = { [Lang.Id]: idStrings, [Lang.En]: en };
 
 export type StringKey = keyof typeof en;
+
+/**
+ * The full name of each language, used as the switch's accessible name. It lives
+ * in the dictionaries like every other word, keyed by the enum so no component
+ * holds a language name or a ternary that picks one.
+ */
+export const LANG_NAME_KEY: Record<Lang, StringKey> = {
+  [Lang.Id]: 'lang.id',
+  [Lang.En]: 'lang.en',
+};
 type Vars = Record<string, string | number>;
 
 export function coerceLang(value: unknown): Lang {
@@ -44,8 +54,8 @@ export function translator(lang: Lang): Translate {
 }
 
 /**
- * The language lives in the URL as ?lang=, so the provider takes it from the
- * route rather than holding its own state. One source of truth, shareable links.
+ * The language is the first path segment, so the provider takes it from the route
+ * parameters rather than holding its own state. One source of truth, shareable links.
  */
 export const LangContext = createContext<Lang>(DEFAULT_LANG);
 

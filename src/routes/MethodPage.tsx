@@ -1,11 +1,14 @@
-import { Link } from '@tanstack/react-router';
 import { Card } from '../components/ui/Card.tsx';
+import { PageLink } from '../components/ui/PageLink.tsx';
 import { useT } from '../lib/i18n.ts';
 import { RISK_WEIGHTS } from '../lib/risk.ts';
-import { DEFAULT_SEARCH } from '../lib/viewState.ts';
 
 /** Names stay as they are: they are proper nouns, not UI copy. */
-const SOURCES: { name: string; href: string; prefix: 'firms' | 'air' | 'forecast' | 'geo' | 'tiles' }[] = [
+const SOURCES: {
+  name: string;
+  href: string;
+  prefix: 'firms' | 'air' | 'forecast' | 'geo' | 'tiles' | 'mongabay';
+}[] = [
   { name: 'NASA FIRMS', href: 'https://firms.modaps.eosdis.nasa.gov/active_fire/', prefix: 'firms' },
   {
     name: 'Open-Meteo air quality',
@@ -19,6 +22,11 @@ const SOURCES: { name: string; href: string; prefix: 'firms' | 'air' | 'forecast
     prefix: 'geo',
   },
   { name: 'OpenStreetMap tiles', href: 'https://www.openstreetmap.org/copyright', prefix: 'tiles' },
+  {
+    name: 'Mongabay Indonesia',
+    href: 'https://www.mongabay.co.id/',
+    prefix: 'mongabay',
+  },
 ];
 
 const LIMIT_KEYS = [
@@ -146,13 +154,12 @@ export function MethodPage() {
 
       <p className="text-label-12 text-[var(--faint)]">
         {t('method.back')}
-        <Link
-          to="/"
-          search={{ ...DEFAULT_SEARCH }}
+        <PageLink
+          to="/$lang"
           className="underline decoration-[var(--border-strong)] underline-offset-2 hover:decoration-[var(--accent)]"
         >
           {t('method.backLink')}
-        </Link>
+        </PageLink>
         .
       </p>
     </div>

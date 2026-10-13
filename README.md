@@ -1,5 +1,8 @@
 # Kawal Asap
 
+**[kawalasap.netlify.app](https://kawalasap.netlify.app)** — deployed, Indonesian by
+default, English under `/en`.
+
 Hotspot and haze monitoring for Indonesia, built entirely from free and keyless public
 data. No account, no API key, no paid tier, and that is a hard rule rather than a
 preference: if a source starts asking for a key, the source goes.
@@ -7,7 +10,9 @@ preference: if a source starts asking for a key, the source goes.
 Pantauan titik panas dan kabut asap Indonesia. Datanya dari sumber publik gratis: tanpa
 kunci API, tanpa akun, tanpa langganan.
 
-![The dashboard in dark mode](docs/screenshots/dashboard-dark.png)
+![The home page in dark mode: the country at a glance](docs/screenshots/app-home-dark.png)
+
+![The map in dark mode: the density layer over Indonesia](docs/screenshots/app-explore-dark.png)
 
 ## What it shows
 
@@ -23,8 +28,22 @@ kunci API, tanpa akun, tanpa langganan.
   that is labelled as ours wherever it appears.
 - **Wind and dryness context**, because a hotspot on its own does not say whether it will
   spread.
-- **Indonesian first, English second.** The language lives in `?lang=`, so an English view
-  is a link you can send someone.
+- **Pages for places.** Every region box and every monitored city has a page of its own, and
+  both are one template, so a shared link opens the same view for everyone.
+- **A guide, and a reading list rather than a news desk.** The guide carries the practical
+  steps for each index band, using the same wording the panels do. The news page lists fire,
+  haze and air-quality reporting from Mongabay Indonesia with the original headline, the
+  publisher and the publication date, and links every item straight out to them. There is no
+  article page here and nothing is copied from the publisher. The list is short by design: a
+  publisher's feed is their last twenty posts, so it is a window on recent reporting rather than
+  an archive, and the page says so.
+- **Indonesian first, English second.** The language is the first path segment (`/id`, `/en`),
+  so an English view is a link you can send someone, and the switch rewrites that one
+  segment without leaving the page.
+- **One page, one set of filters.** A query string is a page's own state, so `/news`, `/guide`
+  and `/method` carry none at all, a region page carries the window its chart reads, and only
+  the map carries the whole filter set. A key that is already at its default is stripped from
+  the address bar. See [`docs/routing.md`](docs/routing.md).
 
 ## Where the data comes from
 
@@ -35,6 +54,7 @@ kunci API, tanpa akun, tanpa langganan.
 | [Open-Meteo forecast](https://open-meteo.com/en/docs) | wind at 10 m and 850 hPa, seven day precipitation | hourly and daily | free, keyless |
 | [Open-Meteo geocoding](https://open-meteo.com/en/docs/geocoding-api) | place names and coordinates, restricted to Indonesia | on demand | free, keyless |
 | [OpenStreetMap tiles](https://www.openstreetmap.org/copyright) | the basemap, in both themes | continuous | free, attribution required |
+| [Mongabay Indonesia](https://www.mongabay.co.id/) | reporting on fire, haze and air quality, filtered by headline. Only the headline, the publisher, the date and a link are shown | publishes through the day | free, keyless |
 
 Nothing else is fetched, and nothing is sent anywhere. There is no analytics, no account,
 and no cookie. What you keep in your browser is a theme preference and a 24 hour cache.
@@ -108,18 +128,22 @@ Raising a request count "for freshness" is a regression. Show the timestamp inst
 | `shared/regions.ts` | provinces, bounding boxes, neighbours. Shared with the function |
 | `netlify/functions/fires.ts` | the only server code |
 | `docs/design.md` | the design system and the reasoning behind it |
+| `docs/notes.md` | measurements, dead ends, and why a rule exists |
+| `docs/routing.md` | the route tree, the language segment and the view state model |
 | `docs/mockup/redesign.html` | the settled layout, kept in sync with the app |
 | `AGENTS.md` | the rules for working in this repo |
 
 ## Status, honestly
 
-- **Not deployed yet.** It runs locally.
-- **The hotspot layer needs the function, and the function does not fit Netlify's
-  synchronous limit.** NASA serves the FIRMS CSV at roughly 0.2 MB/s, so the 7 day South
-  East Asia file takes 54 to 59 seconds to download, against a 10 second limit. Fine for
-  local development; wrong for a deploy. The fix is decided and not built: a scheduled
-  background function that writes the CSV into Netlify Blobs, with `fires.ts` reading the
-  blob instead of NASA.
+- **Deployed at [kawalasap.netlify.app](https://kawalasap.netlify.app).** The app and its
+  function both ship. The one thing that can fail there is the FIRMS download behind the
+  hotspot layer: the South East Asia 7 day files are 7.8 MB (VIIRS) and 1.4 MB (MODIS),
+  and the function aborts its own download 8 seconds in, well inside Netlify's limit.
+  Both files came back inside that window on the deploy, so the layer is live; that is
+  close to the limit rather than comfortably inside it. When a download does not make
+  it, the source is reported as failed rather than drawn as zero. The fix is decided and
+  not built: a scheduled background function that writes the CSV into Netlify Blobs,
+  with `fires.ts` reading the blob instead of NASA.
 - **CARTO basemaps now need an API key**, so both themes use OpenStreetMap tiles and the
   dark look is a CSS filter on the tile layer only. Detections keep their real colours.
 - **NASA's FIRMS WMS looks usable and is not**: it advertises CORS and then returns the
@@ -133,15 +157,21 @@ Raising a request count "for freshness" is a regression. Show the timestamp inst
 
 - **React 19 + Vite 7**, TypeScript strict, no server rendering. A dashboard gains nothing
   from SSR and pays a runtime for it.
-- **TanStack Router** with real routes (`/`, `/region/$regionId`, `/method`). No hash
-  routing, and all view state lives in the query string, including the language and a
-  pinned place, so every view is linkable and refreshable.
+- **TanStack Router** with real routes, each under a language segment: `/$lang`,
+  `/$lang/explore`, `/$lang/region/$regionId`, `/$lang/region/$regionId/$placeId`,
+  `/$lang/news`, `/$lang/guide`, `/$lang/guide/$slug`, `/$lang/method`. No hash routing, and
+  each page carries only the search keys it reads, so a pinned place rides in the map's URL
+  and a guide page has a clean one. Every view is linkable and refreshable —
+  `docs/routing.md` is the model.
 - **TanStack Query** with a `localStorage` persister, one query per source.
 - **Leaflet** with a canvas renderer and zoom-aware binning for the detection layer.
 - **Tailwind 3.4** with Geist tokens. Solid 1px borders, no blur, no glow, one accent,
   mono with tabular figures for every number.
 - **One Netlify function**, because of a missing CORS header and nothing else.
-- Bundle: 601 kB of JavaScript (187 kB gzipped) and 36 kB of CSS (11 kB gzipped).
+- Bundle: 676 kB of JavaScript (208 kB gzipped) and 38 kB of CSS (12 kB gzipped).
+- **Illustrations are inline SVG, drawn from tokens.** One line drawing per guide (card and
+  article), and `SiteArt` drawings on the summary cards, all in `currentColor` with a single
+  accent element, so they follow the theme and cost no request.
 
 ## Design
 

@@ -3,9 +3,8 @@ import { WindowKey, WINDOW_LABEL_KEY } from '../lib/fires.ts';
 import { formatInt, formatOne } from '../lib/format.ts';
 import { useLang, useT } from '../lib/i18n.ts';
 import { BAND_COLOUR, BAND_LABEL_KEY, countForWindow, type RegionRow } from '../lib/risk.ts';
-import { coerceSearch } from '../lib/viewState.ts';
+import { regionFrom } from '../lib/viewState.ts';
 import { Badge } from './ui/Badge.tsx';
-import { BadgeVariant } from '../lib/colour.ts';
 import { BandIcon } from './ui/icons.tsx';
 import { InfoTip } from './ui/InfoTip.tsx';
 
@@ -50,9 +49,9 @@ export function RegionTable({ rows, window }: RegionTableProps) {
             <tr key={row.regionId} className="border-t border-[var(--border)] align-top">
               <td className="py-3 pr-3">
                 <Link
-                  to="/region/$regionId"
-                  params={{ regionId: row.regionId }}
-                  search={(previous) => coerceSearch({ ...previous, region: row.regionId })}
+                  to="/$lang/region/$regionId"
+                  params={{ lang, regionId: row.regionId }}
+                  search={(previous) => regionFrom(previous)}
                   className="font-medium text-[var(--text)] underline decoration-[var(--border-strong)] underline-offset-2 hover:decoration-[var(--accent)]"
                 >
                   {row.name}
@@ -63,10 +62,8 @@ export function RegionTable({ rows, window }: RegionTableProps) {
               </td>
               <td className="py-3 pr-3">
                 <Badge
-                  variant={BadgeVariant.Outlined}
                   colour={BAND_COLOUR[row.band]}
                   icon={<BandIcon band={row.band} />}
-                  title={row.drivers.join('; ')}
                 >
                   {t(BAND_LABEL_KEY[row.band])} {row.score}
                 </Badge>

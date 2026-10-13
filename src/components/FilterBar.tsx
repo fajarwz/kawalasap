@@ -10,11 +10,11 @@ import {
 import { formatInt } from '../lib/format.ts';
 import { useLang, useT } from '../lib/i18n.ts';
 import { InfoTip } from './ui/InfoTip.tsx';
-import { Basemap, LayerMode, WindLevel, type DashboardSearch } from '../lib/viewState.ts';
+import { Basemap, LayerMode, WIND_LEVEL_LABEL, WindLevel, type ExploreSearch } from '../lib/viewState.ts';
 
 interface FilterBarProps {
-  search: DashboardSearch;
-  onChange: (patch: Partial<DashboardSearch>) => void;
+  search: ExploreSearch;
+  onChange: (patch: Partial<ExploreSearch>) => void;
   shownCount: number;
   totalCount: number;
   layerForced: boolean;
@@ -181,8 +181,8 @@ export function FilterBar({
                 disabled={!search.wind}
                 onChange={(event) => onChange({ windLevel: event.target.value as WindLevel })}
               >
-                <option value={WindLevel.Ten}>10 m</option>
-                <option value={WindLevel.Hpa850}>850 hPa</option>
+                <option value={WindLevel.Ten}>{WIND_LEVEL_LABEL[WindLevel.Ten]}</option>
+                <option value={WindLevel.Hpa850}>{WIND_LEVEL_LABEL[WindLevel.Hpa850]}</option>
               </select>
             </span>
           </label>

@@ -216,67 +216,113 @@ in visible text: the risk score says "heuristic, not an official forecast" in th
 line, the air panel says its values are modelled, and the map note says one detection
 is not one fire. Tips explain; they do not carry the disclaimer.
 
-## The dashboard, top to bottom
+## The pages, top to bottom
 
-Top to bottom, in one column: a page head (h1, one supporting line), a toolbar (the
-window, one disclosure, and the freshness stamp with the action that refreshes it on the
-right), an optional risk banner, four stat tiles, the map with its place search, a two
-column row (trend beside city air quality, both answering for the same place), the
-regional table, and the source table folded into a disclosure.
+Six surfaces, and each one is allowed one idea. A page that answers two questions answers
+neither, which is why the old single dashboard was split three ways: the map, the regional
+table and the city summary each wanted to be the page, so every reader scrolled past two of
+them on the way to what they came for.
 
-- **One title and one stamp per page.** `h1` is the page's subject. The stamp covers the
-  whole page; panels do not repeat it. It sits on the right of the toolbar row rather than
-  stacked under the title, because three lines of head pushed the map down while the right
-  half of that area sat empty. A panel that shows data from a *different* source or hour
-  still carries that source's own time, because that is new information, not a duplicate.
-- **A toolbar, not a form.** The window stays visible because it changes what the map
-  shows. Confidence, radiative power, map layer, basemap and the wind layer sit behind one
-  disclosure that reports how many are non-default, so the page opens quietly and the
-  state is never hidden. Region is not in the toolbar: it belongs to the place search, and
-  a province select sitting here beside a city search sitting there was two controls that
-  looked like one control.
-- **Four tiles, equal weight, one number each.** No hero number, no coloured value:
-  colour in this product means a reading, so the figure stays in the page text colour.
-- **Both panels in a row answer for the same place.** The trend counts detections for the
-  current scope and the city list shows the cities inside it, so one row can never pair
-  Kalimantan's daily counts with a list of Javan cities. A scope with no monitored city
-  says so and points at the search, instead of rendering an empty list.
-- **A picked city opens a summary, and the panel is master-detail.** The air quality
-  card shows either the city list or one city's summary, never both: pick a city in the
-  list, click its marker on the map, or click the pinned row, and the list is replaced by
-  the summary with a way back. Two blocks stacked in one narrow column read as one
-  confused panel, and the list carried its own scrollbar, so the second block appeared
-  below a second scroll region.
-- **The summary is the numbers plus what to do.** PM2.5, the index, PM10 and the
-  detections in that city's province for the selected window, the place marked on the
-  index scale, the eight day trend, and three concrete lines for the band. Nothing is
-  selected on load: an unasked-for summary is a wall of text.
-- **The guidance is the only part a reader may act on, so it is never a footnote and
-  never a tip.** Three lines per band, in visible text, followed by what it is not: not
-  medical advice, not an official warning, and built on a model rather than a measurement
-  at that address.
-- **The map is the largest element, and it owns the way in.** One box above the frame
-  takes both kinds of place: type `kal` and it offers the region, which scopes the whole
-  page, or type `sampit` and it offers the city, which drops a point, opens that point's
-  reading, and leaves a chip naming the region it fell inside. The click-the-map hint sits
-  beside it because a click does the second job only. A province chosen this way shows as a
-  chip next to the box, removable there, and a city whose region is not the current scope
-  is still readable: the chip states the scope, the reading states the city. Legend below
-  the frame as one quiet line, explanatory note under that.
-- **The table shows five columns.** Rain and wind were columns of their own until we
-  noticed both already appear in the driver sentence under each province. A column
-  that repeats a sentence is noise.
-- **Reference material folds away.** The source table is closed by default with its
-  summary visible, which keeps the page honest without making it long.
+Three rules follow from that, and they are the whole of the visual system's plumbing:
+
+- **One column, one width.** `containerClass` in `src/components/ui/styles.ts` is the only
+  page width (`max-w-[1400px]`, `px-4 sm:px-6`). A page that sets its own width makes two
+  pages feel like two products.
+- **A section is a heading, not a card.** `SectionHeading` is 20px, one step above a card
+  title, so a page reads as sections that contain cards rather than as a stack of cards.
+  Cards hold a thing; headings state the page's own structure.
+- **Shared before local.** `EmptyState`, `SourceTimestamp`, `DataSummaryCard`, `GuideCard`
+  and `SectionHeading` exist so the same idea is not rebuilt per page. `styles.ts` is the
+  only home for the control classes, which is why the select on the Explore toolbar and the
+  select on a region page cannot drift apart.
+
+**`/` — what is happening, and where to go next.** An eyebrow, one `h1`, one supporting
+line, and the way in: the same search box the header carries. Three summary cards follow
+(detections, air quality, developments), then the map preview beside the latest
+developments, the regions, and the four guides.
+
+- **Three cards, each a single number with its scope spelled out in the detail line**
+  ("Indonesia only, 24 hour window"). Every count in this product is scoped, and a count
+  without its scope is a claim.
+- **A card that cannot show a number says so.** Unavailable air quality reads as
+  unavailable rather than as `0`, and a source that is not connected says that instead of
+  rendering an empty panel. All four states in `src/lib/dataState.ts` get designed.
+- **No card for anything we cannot source.** No national average, no trend arrow, no "you
+  are here" tile: each of those would be a number we invented.
+
+**`/explore` — the map owns the page.** A toolbar (window, layers, freshness stamp, refresh)
+over a two column grid: the map card, and the location panel. The map card carries its
+legend, one line saying a click reads the model value at that point, and the note that a
+detection is not a measurement of local air. The panel beside it is the master-detail air
+card, the region and city selects that scope the page, and the link through to that
+region's own page. The regional table and the folded source table sit under the grid:
+reference material, not the page's subject.
+
+**`/region/$regionId` and `/region/$regionId/$placeId` — one template, city optional.**
+`RegionOverview` renders both, because a reader asking about Kalimantan and a reader asking
+about Palembang are asking the same question with a different scope. Head (the place, one
+supporting line), the risk line when the region has one, two snapshot cards (detections in
+this region box, air quality), the hotspot activity chart, the air-quality list for the
+region, the developments section, the guidance for the band, and the closing data note
+linking to the method.
+
+- **The scope of every count is stated where the number is.** The counts describe the
+  region *box*, not a city boundary and not an administrative province, and the line under
+  the number says which. A city page names the box it falls inside before showing the box's
+  counts, because that is the fact that makes the number readable.
+- **The same sentence cannot say two different things.** The practical steps on a region
+  page are the band's steps from `src/lib/guide.ts`, the same strings the air panel shows,
+  so the guidance and the number can never disagree.
+- **A city without a modelled value says so.** "No recent reading available" plus the way
+  to the map, never a substitute value and never a silently shorter list presented as the
+  whole picture.
+
+**`/news` — a reading list, not a news desk.** One publisher feed is read in the browser,
+filtered to headlines about fire, haze or air, and listed as the original headline, the
+publisher, their publication date and a link that leaves the site. No summary, no image, no
+article page: the publisher's page is the only complete version of their story, and copying
+it is not something this project can stand behind. A place tag appears only when the
+publisher's own location metadata names one of our boxes, and the section says whose tag it
+is. All four states are designed: loading, empty (the feed was read and nothing is on
+subject), failed (the feed answered with an error, which is not evidence of no news) and
+ready. The page also says plainly what it is reading: the publisher's feed is their last twenty
+posts, so the list is a window on what is being reported now rather than an archive, and it stays
+short when little is published. Filling it would mean loosening the filter, which is padding.
+
+**`/guide` and `/guide/$slug` — guidance that cannot contradict the numbers.** The index
+carries a featured guide and the list; an article is a quick answer, what to know, the
+practical steps for the relevant bands, the reference material it draws on, and the related
+guides. The disclaimer is visible text at the foot of every article, never a tip, and the
+reference list says the site is not endorsed by the organisations in it.
+
+Every guide carries a line drawing, so a card is scannable before it is readable: the reader
+looking for the mask guide finds the mask first. One drawing per guide, inline SVG rather than
+an image file, drawn in a 64×64 box with a 1.5 stroke in `currentColor` and exactly one accent
+element — the subject the guide is about, so nothing names a colour and both themes work. The
+drawing sits first in the card at 44px beside the heading, and at the top of an article beside
+the title; it is decorative and `aria-hidden`, so it never becomes part of a link's name. Keep
+each one to a few strokes: a shape that only resolves at 200px is clutter at this size.
+
+Panels and sections draw from the same set: `SiteArt` in `src/lib/illustrations.ts` names them
+and `SiteIllustration` renders one, at 34px in `--faint` ink at the top of a summary card, where
+it says what the card is about before the label is read and stays put when the data fails. The
+vocabulary is an enum and the registry is keyed by it, so adding a name without drawing it fails
+the build, and a guide's drawing stays keyed by `GuideSlug` — the two cannot drift. Draw a new one
+when a surface has a subject to show, not to fill space: the brief's rule against clutter applies
+to pictures as much as to cards.
+
+**`/method`** is unchanged and stays the only place the full source table, freshness and
+limits live.
 
 ## States
 
 Loading, empty and failed are designed, not defaulted. `src/components/ui/Skeleton.tsx`
 holds the placeholder used for both.
 
-- **Loading** keeps the page's shape: four tile skeletons and a map-sized skeleton, so
-  nothing jumps when the data arrives. The explanation of the slow first read stays
-  visible underneath.
+- **Loading** keeps the page's shape: a map-sized skeleton on Explore, card-shaped
+  skeletons on the home page, so nothing jumps when the data arrives. The line under it
+  names what is being downloaded and why it is slow the first time: a bare spinner makes a
+  twenty second first read feel broken.
 - **Empty** means the files were read and nothing was detected. Say that, say why a
   short window can legitimately be empty, and offer the longer window as an action.
   An empty map must never read as "no fires near you".
@@ -297,14 +343,21 @@ holds the placeholder used for both.
   a small scale used consistently, tabular lining figures for data, uppercase only for
   short labels.
 
-`docs/mockup/redesign.html` is the settled reference for the layout and the scale. It
-is a standalone page with the same token names as the app, so the two cannot drift.
+`docs/mockup/redesign.html` is the settled reference for the layout and the scale. It is a
+standalone page with the same token names as the app, so the two cannot drift. It shows the
+surfaces as they were before they were split into home, explore and the region template; the
+tokens, the scale and the materials in it still hold.
 
 ## Screenshots
 
-Current: `docs/screenshots/app-after-dark.png` (the dashboard as built) and
-`docs/screenshots/app-empty-state.png` (the empty state, triggered for real by
-filtering to a region and intensity with no detections). `dashboard-dark.png` and
-`dashboard-light.png` are the older, pre-redesign state kept for comparison, and
-`mockup-v2-dark.png` is the settled mockup. Regenerate after a visual change and keep
-them current: a stale screenshot is worse than none.
+Captured from the running app at 1440x900, twice over, and the only ones to trust:
+`app-home-dark.png`, `app-explore-dark.png`, `app-region-dark.png`, `app-home-light.png`.
+They are regenerated with `scripts/measure-page.mjs --screenshot=` in the same change as
+any visual work, because a stale screenshot is worse than none.
+
+The rest of the directory predates the home/explore/region/guide pass and shows a layout
+this product no longer has: `dashboard-dark.png`, `dashboard-light.png`,
+`app-after-dark.png` (which is not even dark), `app-badges.png`, `app-empty-state.png`,
+`app-info-tip.png`. `mockup-v2-dark.png` is the older mockup, kept as history. The README
+embeds only the current one plus the map; regenerate or drop the others rather than
+letting them accumulate.

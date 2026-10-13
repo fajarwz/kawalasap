@@ -1,6 +1,6 @@
 import { AqiTone, TONE_COLOUR } from '../lib/aqi.ts';
 import { useT } from '../lib/i18n.ts';
-import { LayerMode, WindLevel } from '../lib/viewState.ts';
+import { LayerMode, WIND_LEVEL_LABEL, WindLevel } from '../lib/viewState.ts';
 import { Dot, PlainBadge } from './ui/Badge.tsx';
 
 const FRP_STEPS: {
@@ -50,7 +50,7 @@ export function MapLegend({ layer, windLevel }: { layer: LayerMode; windLevel: W
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2.5 L16.5 12.8 L12 10.4 L7.5 12.8 Z" fill="#38bdf8" />
         </svg>
-        {t('map.wind', { level: windLevel })}
+        {t('map.wind', { level: WIND_LEVEL_LABEL[windLevel] })}
       </span>
       <span className="flex items-center gap-2">
         <Dot colour="#94a3b8" />
