@@ -263,6 +263,7 @@
   "method.costBody": "Keempat sumber data bisa dibaca gratis dan tidak memerlukan langganan berbayar. Hosting berupa berkas statis ditambah satu fungsi serverless, keduanya masih di dalam paket gratis. Situs menyimpan cache sendiri di tiga lapis: di peramban, di tepi jaringan, dan di dalam fungsi itu. Jadi, pada hari yang ramai pun permintaan ke NASA tetap sedikit, bukan satu permintaan per pengunjung. Biaya yang nanti akan muncul adalah domain sendiri dan paket ubin peta yang layak.",
   "method.costSubtitle": "Kenapa ini bisa berjalan tanpa biaya.",
   "method.costTitle": "Biaya",
+  "method.counter": "Situs ini juga menghitung kunjungan dengan GoatCounter. Yang dicatat hanya alamat halaman dan waktunya: tanpa cookie, tanpa mengenali pengunjung, dan tanpa membagikan data ke jaringan iklan. Alamat yang dicatat tidak menyertakan bagian setelah tanda tanya, jadi pilihan filter dan rentang waktu Anda tidak ikut terkirim.",
   "method.firms.gives": "Deteksi titik panas dari VIIRS (Suomi NPP) dan MODIS (Terra, Aqua)",
   "method.firms.licence": "Data terbuka pemerintah Amerika Serikat, sumbernya NASA FIRMS",
   "method.firms.limits": "Deteksi, bukan kebakaran. Satu area yang terbakar bisa muncul di beberapa lintasan dan piksel. Titik panas yang kecil, singkat, atau berasap bisa terlewat, dan catatan terbaru tertinggal beberapa jam dari waktu nyata.",

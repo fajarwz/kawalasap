@@ -17,6 +17,18 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!--
+      Visit counts, and nothing else about the reader: GoatCounter records the page and the
+      time, with no cookie and nothing that identifies a visitor. The app counts each route
+      itself (src/lib/goatcounter.ts), so `no_onload` keeps the first view from being counted
+      twice and the counter never sees the query string, which here is view state.
+    -->
+    <script
+      data-goatcounter="https://kawalasap.goatcounter.com/count"
+      data-goatcounter-settings='{"no_onload": true}'
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
   </head>
   <body>
     <div id="root"></div>

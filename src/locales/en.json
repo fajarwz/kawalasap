@@ -263,6 +263,7 @@
   "method.costBody": "All four data sources are free to read and need no paid subscription. Hosting is static files plus one serverless function, both inside a free tier. The site keeps its own caching in three layers, in the browser, at the edge and inside the function, so a busy day still means a small number of requests to NASA rather than one per visitor. The costs that would eventually appear are a custom domain and a proper map tile plan.",
   "method.costSubtitle": "Why this runs for nothing.",
   "method.costTitle": "Cost",
+  "method.counter": "The site also counts visits with GoatCounter. What is recorded is the page address and the time: no cookies, nothing that identifies a visitor, and nothing shared with an ad network. The address sent leaves out everything after the question mark, so your filters and the window you picked never leave the page.",
   "method.firms.gives": "Fire detections from VIIRS (Suomi NPP) and MODIS (Terra, Aqua)",
   "method.firms.licence": "Free US government data, credit NASA FIRMS",
   "method.firms.limits": "Detections, not fires. One burning area can appear in several passes and pixels. Small, short or smoky fires are missed, and the newest record lags real time by hours.",

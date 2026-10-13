@@ -42,6 +42,24 @@ down, roughly 93,000 land inside the box, and the density layer's cells are buil
 same filtered set. VIIRS reports confidence as `l`/`n`/`h` and MODIS as a percentage; both
 are normalised to low/nominal/high, and satellite codes `N`/`T`/`A` become names.
 
+## The visit counter
+
+- GoatCounter, one script in `index.html` from `gc.zgo.at`: the page address and the time,
+  no cookie, nothing that identifies a visitor. It carries `no_onload: true`, so the loader
+  counts nothing by itself. This site is one page to a browser, so a load-time count would
+  have logged arrivals and none of the taps between pages; `src/lib/goatcounter.ts` asks for
+  one count per route instead, from the effect in `RootLayout`, which is also why switching
+  the language counts as a view.
+- The path goes without the query string. Measured on `/id`, a tap from the home page to the
+  map sends `{"path":"/id/explore"}`, so the filters and the window stay on the page and the
+  counter does not grow one row per filter combination.
+- The counter is allowed to fail. `countPageview` looks for `window.goatcounter` 20 times at
+  100 ms intervals and then gives up: the script is async and the app usually boots first,
+  and a counter that never arrives must leave the page exactly as it was.
+- GoatCounter ignores visitors on `localhost` by its own default, which is why a local check
+  can prove the count is *called* (spy on `window.goatcounter.count`) but never that the
+  request left the browser. That half needs the deployed domain.
+
 ## Counting, and the bug that made three numbers disagree
 
 Measured on 13 Oct 2026, before the fix, on the default 24 hour view:

@@ -1,7 +1,9 @@
-import { Outlet, useParams } from '@tanstack/react-router';
+import { Outlet, useParams, useRouterState } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { Footer } from '../components/site/Footer.tsx';
 import { Header } from '../components/site/Header.tsx';
 import { containerClass } from '../components/ui/styles.ts';
+import { countPageview } from '../lib/goatcounter.ts';
 import { coerceLang, LangContext } from '../lib/i18n.ts';
 
 /**
@@ -13,6 +15,16 @@ import { coerceLang, LangContext } from '../lib/i18n.ts';
 export function RootLayout() {
   const params = useParams({ strict: false }) as { lang?: string };
   const lang = coerceLang(params.lang);
+  /**
+   * One view per route, not one per page load. This is a single page to a browser, so a
+   * tap from the home page to the map would otherwise be invisible; the language switch
+   * counts as one too, because it is a new address and a new reading.
+   */
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    countPageview(pathname);
+  }, [pathname]);
 
   return (
     <LangContext.Provider value={lang}>

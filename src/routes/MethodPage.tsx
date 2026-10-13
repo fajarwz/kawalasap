@@ -149,7 +149,10 @@ export function MethodPage() {
       </Card>
 
       <Card title={t('method.costTitle')} subtitle={t('method.costSubtitle')}>
-        <p className="text-xs leading-relaxed text-[var(--muted)]">{t('method.costBody')}</p>
+        <div className="space-y-3 text-xs leading-relaxed text-[var(--muted)]">
+          <p>{t('method.costBody')}</p>
+          <p>{t('method.counter')}</p>
+        </div>
       </Card>
 
       <p className="text-label-12 text-[var(--faint)]">

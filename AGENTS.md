@@ -67,6 +67,10 @@ netlify deploy --prod --build   # builds, bundles the function, publishes
 - **One server file: `netlify/functions/fires.ts`.** It exists for one reason, the
   NASA FIRMS CSV endpoint sends no CORS header. Do not add a server route to solve a
   problem that belongs on the client.
+- **One third-party script, and it is the visit counter.** GoatCounter, from `index.html`,
+  counted once per route through `src/lib/goatcounter.ts`. It renders nothing, blocks
+  nothing, is never a source of a number on screen, and counts without a cookie. Another
+  script crossing this boundary needs a reason better than "it would be interesting".
 - **Tailwind for styling, tokens for values.** Never hard-code a colour, radius or
   font stack in a component. See `docs/design.md`.
 - **Every option is an enum, never a bare string union.** `WindowKey`, `Confidence`,
