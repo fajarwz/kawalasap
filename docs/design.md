@@ -55,14 +55,13 @@ cut, which is why dark ink lands on green, yellow, orange and red, and white ink
 on deep red and purple. A badge is never coloured text on a tinted background: that was
 the low-contrast version of this.
 
-**The fill is for a reading; our own numbers wear the outline.** `BadgeVariant.Solid`
-marks a value we read from a source, `BadgeVariant.Outlined` a value we computed
-ourselves, where the severity colour stays in the border and the glyph and the label
-stays in the page's text colour. The two share one severity palette, so without the
-distinction an amber "Sedang" for the air at a city and an amber "Sedang" for our
-province risk score can sit a line apart in the same panel and read as the same claim.
-An outlined chip also names its own scale in its label ("Risiko provinsi: Sedang"),
-because the palette cannot say which scale it came from.
+**One badge, every number.** An air reading from a model and our own province risk score
+wear the same badge, because a reader should not have to learn two shapes to read a
+severity. What separates the two claims is the wording: the risk score names its own
+scale ("Risiko provinsi: Sedang", or the band and score in the region table), the note
+beside it says the score is our own heuristic and not an official warning, and the tip
+explains the term. There is no outlined variant and no colour-only cue: severity is
+always fill plus a glyph plus a word.
 
 ## Type
 

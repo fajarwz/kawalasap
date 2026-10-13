@@ -1,53 +1,33 @@
 import type { ReactNode } from 'react';
-import { BadgeVariant, contrastInk } from '../../lib/colour.ts';
+import { contrastInk } from '../../lib/colour.ts';
 
 /**
- * Two kinds of number wear a badge and they must never look alike: a value read
- * from a source gets the solid fill, a value we computed ourselves gets the
- * outline. The province risk band is our own heuristic and it sits a line away from
- * a modelled air reading, so filling both meant an amber "Sedang" and an amber
- * "Sedang" that meant different things.
+ * One badge, one standard. The severity colour is the fill and the ink on top is
+ * chosen for contrast, so the label reads black on green and amber and white on the
+ * deeper reds: never coloured text on a tinted background, which is the low-contrast
+ * version of this. The air reading and our own risk score wear the same badge; the
+ * label, the icon and the `InfoTip` beside it are what say which is which.
+ *
+ * A badge carries no `title`: a native tooltip is slow to appear and looks like the
+ * browser rather than the site. When a badge needs explaining, the `InfoTip` that
+ * sits beside it carries the words.
  */
 interface BadgeProps {
-  /**
-   * The severity colour. Solid, it becomes the fill and the ink on top is chosen
-   * for contrast, so the wording is never coloured text on a coloured tint.
-   * Outlined, it becomes the border and the glyph only.
-   */
+  /** The severity colour: the fill. The ink on top is chosen for contrast. */
   colour: string;
-  /** An `icons.tsx` glyph, drawn at 12px in whichever ink the variant earned. */
+  /** An `icons.tsx` glyph, drawn at 12px in the badge's own ink. */
   icon?: ReactNode;
   children: ReactNode;
-  title?: string;
-  variant?: BadgeVariant;
 }
 
-export function Badge({
-  colour,
-  icon,
-  children,
-  title,
-  variant = BadgeVariant.Solid,
-}: BadgeProps) {
-  const outlined = variant === BadgeVariant.Outlined;
+export function Badge({ colour, icon, children }: BadgeProps) {
   return (
     <span
-      title={title}
-      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full text-micro font-medium ${
-        outlined ? 'px-2 py-0.5' : 'px-1.5 py-0.5'
-      }`}
-      style={
-        outlined
-          ? { border: `1px solid ${colour}`, background: 'transparent', color: 'var(--text)' }
-          : { background: colour, color: contrastInk(colour) }
-      }
+      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-1.5 py-0.5 text-micro font-medium"
+      style={{ background: colour, color: contrastInk(colour) }}
     >
       {icon ? (
-        <span
-          aria-hidden="true"
-          className="inline-flex shrink-0"
-          style={outlined ? { color: colour } : undefined}
-        >
+        <span aria-hidden="true" className="inline-flex shrink-0">
           {icon}
         </span>
       ) : null}
