@@ -71,7 +71,6 @@ interface Dataset {
   counts: { indonesia: WindowCounts; neighbour: WindowCounts };
   byRegion: Record<string, WindowCounts>;
   daily: DailyRow[];
-  cells: [number, number, number, number][];
 }
 
 interface NetlifyEvent {
@@ -243,13 +242,19 @@ function emptyCounts(): WindowCounts {
   return { last24h: 0, last48h: 0, last7d: 0, frpSum24h: 0, meanFrp24h: 0 };
 }
 
+/**
+ * A row counts toward a window when it falls inside that window, measured back
+ * from the newest detection in the data — the same anchor the map, the chart and
+ * the `window` filter use. Counting every row in the seven day file instead made
+ * the 7 day column read higher than the map drawn beside it.
+ */
 function addToCounts(bucket: WindowCounts, ageMs: number, frp: number): void {
   if (ageMs <= WINDOWS['24h']) {
     bucket.last24h += 1;
     bucket.frpSum24h += frp;
   }
   if (ageMs <= WINDOWS['48h']) bucket.last48h += 1;
-  bucket.last7d += 1;
+  if (ageMs <= WINDOWS['7d']) bucket.last7d += 1;
 }
 
 async function getDataset(): Promise<Dataset> {
@@ -283,7 +288,6 @@ async function getDataset(): Promise<Dataset> {
   const counts = { indonesia: emptyCounts(), neighbour: emptyCounts() };
   const byRegion: Record<string, WindowCounts> = {};
   const dailyMap = new Map<string, DailyRow>();
-  const cellMap = new Map<string, [number, number, number, number]>();
 
   for (const row of records) {
     const region = regionOf(row.lat, row.lon);
@@ -301,22 +305,6 @@ async function getDataset(): Promise<Dataset> {
     day.frpSum += row.frp;
     if (region !== 'neighbour') day.countIndonesia += 1;
     day.byRegion[region] = (day.byRegion[region] ?? 0) + 1;
-
-    const latIndex = Math.round(row.lat / CELL_STEP);
-    const lonIndex = Math.round(row.lon / CELL_STEP);
-    const cellKey = `${latIndex}|${lonIndex}`;
-    const cell = cellMap.get(cellKey);
-    if (cell) {
-      cell[2] += 1;
-      if (row.frp > cell[3]) cell[3] = Number(row.frp.toFixed(1));
-    } else {
-      cellMap.set(cellKey, [
-        Number((latIndex * CELL_STEP).toFixed(2)),
-        Number((lonIndex * CELL_STEP).toFixed(2)),
-        1,
-        Number(row.frp.toFixed(1)),
-      ]);
-    }
   }
 
   for (const bucket of [counts.indonesia, counts.neighbour, ...Object.values(byRegion)]) {
@@ -335,7 +323,6 @@ async function getDataset(): Promise<Dataset> {
     counts,
     byRegion,
     daily: [...dailyMap.values()].sort((a, b) => (a.date < b.date ? -1 : 1)),
-    cells: [...cellMap.values()],
   };
 
   const partial = settled.some((item) => item.meta.error);
@@ -346,6 +333,37 @@ async function getDataset(): Promise<Dataset> {
     dataset,
   };
   return dataset;
+}
+
+/**
+ * The density layer's grid: 0.1° cells, each carrying how many detections fell
+ * in it and the strongest radiative power among them.
+ *
+ * Built from the rows in the requested window, not from the whole file. Painting
+ * seven days of cells under a card that says "8,638 detections in 24 h" is a
+ * contradiction the reader cannot see, and it made the country look many times
+ * busier than the window they asked for.
+ */
+function buildCells(rows: FireRecord[]): [number, number, number, number][] {
+  const cellMap = new Map<string, [number, number, number, number]>();
+  for (const row of rows) {
+    const latIndex = Math.round(row.lat / CELL_STEP);
+    const lonIndex = Math.round(row.lon / CELL_STEP);
+    const cellKey = `${latIndex}|${lonIndex}`;
+    const cell = cellMap.get(cellKey);
+    if (cell) {
+      cell[2] += 1;
+      if (row.frp > cell[3]) cell[3] = Number(row.frp.toFixed(1));
+    } else {
+      cellMap.set(cellKey, [
+        Number((latIndex * CELL_STEP).toFixed(2)),
+        Number((lonIndex * CELL_STEP).toFixed(2)),
+        1,
+        Number(row.frp.toFixed(1)),
+      ]);
+    }
+  }
+  return [...cellMap.values()];
 }
 
 function buildPayload(body: Dataset, windowKey: string) {
@@ -364,7 +382,7 @@ function buildPayload(body: Dataset, windowKey: string) {
     counts: body.counts,
     byRegion: body.byRegion,
     daily: body.daily,
-    cells: body.cells,
+    cells: buildCells(inWindow),
     points: kept.map((row) => [
       Number(row.lat.toFixed(2)),
       Number(row.lon.toFixed(2)),
