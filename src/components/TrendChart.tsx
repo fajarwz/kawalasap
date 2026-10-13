@@ -2,9 +2,11 @@ import type { DailyCount } from '../lib/fires.ts';
 import { formatDayShort, formatInt } from '../lib/format.ts';
 import { useLang, useT } from '../lib/i18n.ts';
 import { regionLabel } from '../lib/regions.ts';
+import { RegionScope } from '../lib/viewState.ts';
 
 interface TrendChartProps {
   daily: DailyCount[];
+  /** A `RegionScope` member, or the id of one of our boxes. */
   region: string;
 }
 
@@ -14,7 +16,7 @@ export function TrendChart({ daily, region }: TrendChartProps) {
 
   const series = daily.map((day) => ({
     date: day.date,
-    value: region === 'all' ? day.countIndonesia : (day.byRegion[region] ?? 0),
+    value: region === RegionScope.All ? day.countIndonesia : (day.byRegion[region] ?? 0),
   }));
   const max = Math.max(1, ...series.map((point) => point.value));
 
@@ -31,10 +33,6 @@ export function TrendChart({ daily, region }: TrendChartProps) {
               <div
                 className="w-full rounded-t-sm bg-[var(--accent)]"
                 style={{ height: `${height}%` }}
-                title={t('trend.barTitle', {
-                  day: formatDayShort(point.date, lang),
-                  count: formatInt(point.value, lang),
-                })}
               />
             </div>
           );
@@ -50,7 +48,7 @@ export function TrendChart({ daily, region }: TrendChartProps) {
       <p className="mt-2 text-label-12 leading-relaxed text-[var(--faint)]">
         {t('trend.note', {
           scope:
-            region === 'all'
+            region === RegionScope.All
               ? t('trend.scopeIndonesia')
               : t('trend.scopeRegion', { region: regionLabel(region) }),
         })}

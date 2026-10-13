@@ -62,7 +62,6 @@ export function AirQualityPanel({
       <Badge
         colour={category ? TONE_COLOUR[category.tone] : '#64748b'}
         icon={category ? <AqiIcon tone={category.tone} /> : <IconUnknown />}
-        title={category?.advice}
       >
         {reading.usAqi === null ? t('common.na') : Math.round(reading.usAqi)}
       </Badge>

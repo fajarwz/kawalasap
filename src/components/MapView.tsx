@@ -14,10 +14,10 @@ import {
   type SourceMeta,
 } from '../lib/fires.ts';
 import { formatDateTimeWib, formatInt, formatOne } from '../lib/format.ts';
-import { useLang, useT, type Translate } from '../lib/i18n.ts';
+import { useLang, useT } from '../lib/i18n.ts';
 import { REGIONS, regionLabel, regionOf } from '../lib/regions.ts';
 import { Basemap, LayerMode, WindLevel, type PinPoint } from '../lib/viewState.ts';
-import { compass16, headingTo, type WindPoint } from '../lib/wind.ts';
+import { headingTo, type WindPoint } from '../lib/wind.ts';
 
 const OSM_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const OSM_ATTRIBUTION =
@@ -64,11 +64,15 @@ export interface MapViewProps {
   onSelectCity?: (cityId: string) => void;
 }
 
-function windIcon(speed: number, fromDegrees: number, t: Translate) {
-  const label = t('map.windTitle', { dir: compass16(fromDegrees), speed: Math.round(speed) });
+/**
+ * A wind arrow. It carries no native `title`: the arrow only claims a direction,
+ * the legend says that in visible text, and its speed is read where it is actually
+ * reported, beside the map.
+ */
+function windIcon(fromDegrees: number) {
   return L.divIcon({
     className: '',
-    html: `<div title="${label}" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;transform:rotate(${headingTo(
+    html: `<div style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;transform:rotate(${headingTo(
       fromDegrees,
     )}deg)"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 L16.5 12.8 L12 10.4 L7.5 12.8 Z" fill="#38bdf8" opacity="0.95"/></svg></div>`,
     iconSize: [26, 26],
@@ -324,12 +328,12 @@ export function MapView(props: MapViewProps) {
       const direction = props.windLevel === WindLevel.Ten ? point.dir10 : point.dir850;
       if (speed === null || direction === null) continue;
       L.marker([point.lat, point.lon], {
-        icon: windIcon(speed, direction, t),
+        icon: windIcon(direction),
         interactive: false,
         keyboard: false,
       }).addTo(group);
     }
-  }, [props.wind, props.showWind, props.windLevel, t]);
+  }, [props.wind, props.showWind, props.windLevel]);
 
   // The pinned place: one ring on top of everything, with its name beside it.
   useEffect(() => {
