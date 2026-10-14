@@ -1,10 +1,7 @@
 import { NewsList } from '../components/NewsList.tsx';
-import { SectionHeading } from '../components/SectionHeading.tsx';
 import { SourceTimestamp } from '../components/SourceTimestamp.tsx';
 import { EmptyState } from '../components/ui/EmptyState.tsx';
-import { PageLink } from '../components/ui/PageLink.tsx';
 import { Skeleton } from '../components/ui/Skeleton.tsx';
-import { arrow, linkClass } from '../components/ui/styles.ts';
 import { useNews } from '../hooks/useNews.ts';
 import { DataState } from '../lib/dataState.ts';
 import { useT } from '../lib/i18n.ts';
@@ -20,11 +17,10 @@ import { NEWS_SOURCES } from '../lib/news.ts';
  * shows as failed rather than as an empty list, because "no news" would be a claim
  * about the world made out of a timeout.
  *
- * The list is short because the feed is a rolling window rather than an archive, and
- * `news.will4` says so in visible text. Loosening the filter to fill the page would be
+ * The list is short because the feed is a rolling window rather than an archive, and the
+ * empty state says so in visible text. Loosening the filter to fill the page would be
  * padding, which is the one thing the list must not do.
  */
-const NEWS_RULE_KEYS = ['news.will1', 'news.will2', 'news.will3', 'news.will4'] as const;
 
 export function NewsPage() {
   const t = useT();
@@ -84,26 +80,6 @@ export function NewsPage() {
         )}
       </section>
 
-      <section>
-        <SectionHeading title={t('news.whyTitle')} subtitle={t('news.whySubtitle')} />
-        <ul className="max-w-[80ch] list-disc space-y-1.5 pl-4 text-copy-13 leading-relaxed text-[var(--muted)]">
-          {NEWS_RULE_KEYS.map((key) => (
-            <li key={key}>{t(key)}</li>
-          ))}
-        </ul>
-        <p className="mt-4 max-w-[80ch] text-label-12 leading-relaxed text-[var(--faint)]">
-          {t('news.sourceNote', { publisher: source?.publisher ?? '' })}
-        </p>
-        <p className="mt-2 max-w-[80ch] text-label-12 leading-relaxed text-[var(--faint)]">
-          {t('news.attributionNote')}
-        </p>
-        <PageLink
-          to="/$lang/method"
-          className={`mt-4 inline-block text-label-13 text-[var(--text)] ${linkClass}`}
-        >
-          {t('footer.method')} {arrow}
-        </PageLink>
-      </section>
     </div>
   );
 }

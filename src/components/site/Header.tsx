@@ -293,7 +293,6 @@ export function Header() {
           <LocationSearch
             autoFocus
             className="max-w-xl"
-            helper={t('place.helper')}
             onPickRegion={(regionId) => {
               setSearchOpen(false);
               goRegion(regionId);
@@ -364,7 +363,7 @@ export function Header() {
 
           {/* The same search the bar has, in the place a thumb can reach it. */}
           <div className="border-t border-[var(--border)] px-3 py-3">
-            <LocationSearch className="w-full" helper={t('place.helper')} {...fromDrawer} />
+            <LocationSearch className="w-full" {...fromDrawer} />
           </div>
 
           <div className="border-t border-[var(--border)] px-3 py-3">

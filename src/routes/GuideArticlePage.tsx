@@ -52,23 +52,6 @@ export function GuideArticlePage() {
         />
       </header>
 
-      <section className="max-w-[68ch] border-t border-[var(--border)] pt-5">
-        <h2 className="text-heading-16">{t('guide.article.quick')}</h2>
-        <p className="mt-2 text-copy-14 leading-relaxed">{t(guide.quickKey)}</p>
-      </section>
-
-      <section className="max-w-[68ch]">
-        <h2 className="text-heading-16">{t('guide.article.know')}</h2>
-        {guide.know.map((section) => (
-          <div key={section.titleKey} className="mt-4">
-            <h3 className="text-label-14 font-semibold">{t(section.titleKey)}</h3>
-            <p className="mt-1 text-copy-14 leading-relaxed text-[var(--muted)]">
-              {t(section.bodyKey)}
-            </p>
-          </div>
-        ))}
-      </section>
-
       <section className="max-w-[68ch]">
         <h2 className="text-heading-16">{t('guide.article.steps')}</h2>
         <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-copy-14 leading-relaxed">
@@ -98,9 +81,6 @@ export function GuideArticlePage() {
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-label-12 leading-relaxed text-[var(--faint)]">
-          {t('guide.article.sourceNote')}
-        </p>
       </section>
 
       <section className="max-w-[68ch]">
