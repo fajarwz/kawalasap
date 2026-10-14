@@ -94,7 +94,6 @@ export function HomePage() {
         <p className="mt-3 max-w-[62ch] text-copy-14 text-[var(--muted)]">{t('home.description')}</p>
         <div className="mt-6 max-w-xl">
           <LocationSearch
-            helper={t('home.searchHelper')}
             onPickRegion={goRegion}
             onPickCity={goCity}
             onPickPoint={goPoint}
@@ -215,7 +214,7 @@ export function HomePage() {
       <section>
         <SectionHeading title={t('home.exploreTitle')} subtitle={t('home.exploreSubtitle')} />
         <div className="grid gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7">
             <Card title={t('home.mapTitle')}>
               <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <span className="text-micro uppercase text-[var(--faint)]">
@@ -277,7 +276,7 @@ export function HomePage() {
             </Card>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="min-w-0 lg:col-span-5">
             <Card title={t('home.latestTitle')}>
               {news.isLoading ? (
                 <p className="text-label-12 text-[var(--muted)]">{t('state.loading')}</p>

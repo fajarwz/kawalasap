@@ -247,7 +247,9 @@ export function ExplorePage() {
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-8">
+          {/* `min-w-0` because a grid item is as wide as its content wants by default, so one
+              non-wrapping row inside a card can widen the track and take the page with it. */}
+          <div className="min-w-0 lg:col-span-8">
             <Card
               title={t('explore.mapTitle')}
               actions={
@@ -286,7 +288,7 @@ export function ExplorePage() {
             </Card>
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="min-w-0 lg:col-span-4">
             <Card
               title={activeCity ? activeCity.name : pin ? pin.name : t('explore.selectTitle')}
               subtitle={

@@ -28,7 +28,7 @@ export function MapLegend({ layer, windLevel }: { layer: LayerMode; windLevel: W
 
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-label-12 text-[var(--muted)]">
-      <span className="flex items-center gap-2">
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-medium text-[var(--text)]">
           {density ? t('map.density') : t('map.detections')}
         </span>
@@ -40,19 +40,19 @@ export function MapLegend({ layer, windLevel }: { layer: LayerMode; windLevel: W
         ))}
         <span>{density ? t('map.circleSize') : t('map.colour')}</span>
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <Dot colour={TONE_COLOUR[AqiTone.Sensitive]} />
         <Dot colour={TONE_COLOUR[AqiTone.Unhealthy]} />
         <Dot colour={TONE_COLOUR[AqiTone.VeryUnhealthy]} />
         {t('map.cityAir')}
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2.5 L16.5 12.8 L12 10.4 L7.5 12.8 Z" fill="#38bdf8" />
         </svg>
         {t('map.wind', { level: WIND_LEVEL_LABEL[windLevel] })}
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <Dot colour="#94a3b8" />
         {t('map.neighbour')}
       </span>
