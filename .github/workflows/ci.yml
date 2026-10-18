@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  verify:
+    name: lint + build
+    # Pin the image so a ubuntu-latest migration can't change the build OS
+    # underneath the pipeline.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # Vite 7 needs Node 20.19+ or 22.12+; 22 matches netlify.toml and the
+          # functions runtime, so CI and production build on the same version.
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # `npm run build` is `tsc --noEmit` before `vite build`, so this step is
+      # the type-check too: the three gates in AGENTS.md, in one run.
+      - name: Build
+        run: npm run build

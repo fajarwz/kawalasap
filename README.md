@@ -1,7 +1,6 @@
 # Kawal Asap
 
-**[kawalasap.netlify.app](https://kawalasap.netlify.app)** — Indonesian by default, English
-under `/en`.
+[![MIT](https://img.shields.io/badge/license-MIT-16a34a.svg)](LICENSE) ![visitors](https://img.shields.io/badge/dynamic/json?url=https://kawalasap.goatcounter.com/counter/TOTAL.json&query=count&label=Visits&color=blue) [![Web](https://img.shields.io/badge/web-kawalasap.netlify.app-0b0f14.svg)](https://kawalasap.netlify.app)
 
 Hotspot and haze monitoring for Indonesia, built from public data.
 

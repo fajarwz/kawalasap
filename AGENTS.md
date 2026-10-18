@@ -49,6 +49,9 @@ npm run build
 
 Then load the page and check it, see "Verifying a UI change" below.
 
+`.github/workflows/ci.yml` runs the same gate on every push and pull request: keep the two
+in step, so a command added here is added there.
+
 The site is deployed on Netlify from this directory:
 
 ```bash
